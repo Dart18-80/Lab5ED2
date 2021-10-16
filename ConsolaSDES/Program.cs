@@ -9,6 +9,7 @@ namespace ConsolaSDES
         {
             Console.WriteLine("Hello World!");
             SDES ds = new SDES();
+            Console.ReadKey();
         }
     }
 }

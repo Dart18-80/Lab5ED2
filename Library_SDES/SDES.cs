@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -20,7 +21,9 @@ namespace Library_SDES
         protected byte[,] SBox1 = new byte[4, 4] {{ 00, 01, 10, 11 },
                                                 { 10, 00, 01, 11 },
                                                 { 11, 00, 01, 00 },
-                                                { 10, 01, 00, 11 }}; 
+                                                { 10, 01, 00, 11 }};
+
+        public BitArray SBOX1F1C1 = new BitArray(8);
         protected SDES(IHostingEnvironment enviroment)
         {
             this.fistenviroment = enviroment;
@@ -32,6 +35,8 @@ namespace Library_SDES
 
         public void Read_File(string ArchivoNuevo, string ArchivoCodificado, char[] Numero)
         {
+            BitArray NuevoByte = new BitArray(8);
+            
             string UploadFolder = "";
             byte[] Arreglo = new byte[120000];
 
@@ -56,7 +61,10 @@ namespace Library_SDES
                     foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                     {
                         Arreglo[contador] = nuevo;
-                        int[] Binario = Convert_Binario(nuevo); 
+                        NuevoByte = new BitArray(nuevo);
+                        //
+                        
+
 
                         // Enviar Binario a tu funcion de compresion
 
