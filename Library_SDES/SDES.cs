@@ -7,21 +7,21 @@ using System.Text.RegularExpressions;
 
 namespace Library_SDES
 {
-    public class SDES
+    public class SDES 
     {
         public readonly IHostingEnvironment fistenviroment;
         protected string[] Permutaciones = new string[6];
 
-        protected int[,] SBox0 = new int[4, 4] { { 01, 00, 11, 10 },
+        protected byte[,] SBox0 = new byte[4, 4]{{ 01, 00, 11, 10 },
                                                 { 11, 10, 01, 00 },
                                                 { 00, 10, 01, 11 },
                                                 { 11, 01, 11, 10 }};
 
-        protected int[,] SBox1 = new int[4, 4] {{ 00, 01, 10, 11 },
+        protected byte[,] SBox1 = new byte[4, 4] {{ 00, 01, 10, 11 },
                                                 { 10, 00, 01, 11 },
                                                 { 11, 00, 01, 00 },
                                                 { 10, 01, 00, 11 }}; 
-        public SDES(IHostingEnvironment enviroment)
+        protected SDES(IHostingEnvironment enviroment)
         {
             this.fistenviroment = enviroment;
         }
@@ -115,7 +115,25 @@ namespace Library_SDES
                 }
             }
         }
+        public string LlenarEspacio(byte Numeros, int forma)//forma para saber si es de 8 o 10 bits
+        {
+            char[] Base = Convert.ToString(Numeros).ToCharArray();
+            if (Base.Length != 0)
+            {
+                int Flatante = forma - Base.Length;
+                string falt = "";
 
+                for (int i = 0; i < Flatante; i++)
+                {
+                    falt += "0";
+                }
+                return (falt+Convert.ToString(Numeros));
+            }
+            else
+            {
+                return "";
+            }
+        }
         public int BinarioDecinal(char[] numero) 
         {
             int sum = 0;

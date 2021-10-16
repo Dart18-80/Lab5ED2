@@ -1,4 +1,5 @@
 ﻿using System;
+using Library_SDES;
 
 namespace ConsolaSDES
 {
@@ -7,6 +8,7 @@ namespace ConsolaSDES
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+            SDES ds = new SDES();
         }
     }
 }
