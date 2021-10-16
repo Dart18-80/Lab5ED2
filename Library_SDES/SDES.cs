@@ -7,48 +7,56 @@ namespace Library_SDES
 {
     public class SDES
     {
-        public void Read_File(string Path) 
+        public void Read_File(string ArchivoNuevo, string ArchivoCodificado, char[] Numero)
         {
+            byte[] Arreglo = new byte[120000];
             using (Stream Memory = new MemoryStream())
             {
                 long Caracteres = 0;
-                using (Stream Text = new FileStream(Path, FileMode.Open, FileAccess.Read))
+                using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
                 {
                     Caracteres = Text.Length;
-                    Text.CopyTo(Memory);
                 }
-                for (long Count = 0; Count < Caracteres; Count++)
+                using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
                 {
-                    Memory.Seek(Count, SeekOrigin.Begin);
-                    int Vector = Memory.ReadByte();
-                    int[] Binario = Convert_Binario(Vector);
+                    int contador = 0;
+                    foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
+                    {
+                        Arreglo[contador] = nuevo;
+                        int[] Binario = Convert_Binario(nuevo); 
 
+                        // Enviar Binario a tu funcion de compresion
+
+
+                        contador++;
+                    }
+                }
+
+
+
+
+
+                using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
+                {
+                    for (int i = 0; i <= Caracteres; i++)
+                    {
+                        writer.Write(Arreglo[i]);
+                    }
                 }
             }
         }
 
         public int[] Convert_Binario(int Num) 
         {
-            string Binario = "";
-            string Aux = "";
+            int[] binario = new int[8];
+            int i = 0;
             while (Num > 0)
             {
-                Binario = Num % 2 + Binario;
+                binario[i] = Num % 2;
                 Num = Num / 2;
+                i++;
             }
-            long Quant = Binario.Length;
-            Quant = 8 - Quant;
-            if (Quant > 0)
-            {
-                while (Quant >= 0)
-                {
-                    Aux += "0";
-                    Quant--;
-                }
-                Aux += Binario;
-            }
-            int[] Txt = Array.ConvertAll(Aux.Split(""), Int32.Parse);
-            return Txt;
+            return binario;
         }
     }
 }
