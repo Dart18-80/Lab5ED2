@@ -26,6 +26,10 @@ namespace Library_SDES
             this.fistenviroment = enviroment;
         }
 
+        public SDES()
+        {
+        }
+
         public void Read_File(string ArchivoNuevo, string ArchivoCodificado, char[] Numero)
         {
             string UploadFolder = "";
