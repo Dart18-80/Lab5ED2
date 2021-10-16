@@ -14,11 +14,9 @@ namespace Library_SDES
         protected string[] Permutaciones = new string[6];
 
         protected BitArray[,] SBox0 = new BitArray[4, 4];
+        protected BitArray[,] SBox1 = new BitArray[4, 4];
 
-        protected byte[,] SBox1 = new byte[4, 4] {{ 00, 01, 10, 11 },
-                                                { 10, 00, 01, 11 },
-                                                { 11, 00, 01, 00 },
-                                                { 10, 01, 00, 11 }};
+
 
 
         public BitArray SBOX1F1C1 = new BitArray(8);
@@ -30,26 +28,31 @@ namespace Library_SDES
 
         public SDES()
         {
-            BitArray FirstCombine = new BitArray(2);
+            BitArray FirstCombine = new BitArray(2);//00
             FirstCombine[0] = false;
             FirstCombine[1] = false;
 
-            BitArray SecondCombine = new BitArray(2);
+            BitArray SecondCombine = new BitArray(2);//10
             SecondCombine[0] = true;
             SecondCombine[1] = false;
 
-            BitArray ThirdCombine = new BitArray(2);
+            BitArray ThirdCombine = new BitArray(2);//11
             ThirdCombine[0] = true;
             ThirdCombine[1] = true;
 
-            BitArray FourCombine = new BitArray(2);
+            BitArray FourCombine = new BitArray(2);//01
             FourCombine[0] = false;
             FourCombine[1] = true;
 
+            SBox0 = new BitArray[4, 4] { { FourCombine, FirstCombine, ThirdCombine, SecondCombine },
+                                         { ThirdCombine, SecondCombine, FourCombine, FirstCombine },
+                                         { FirstCombine, SecondCombine, FourCombine, ThirdCombine },
+                                         { ThirdCombine, FourCombine, ThirdCombine, SecondCombine }};
 
-            SBox0[0, 0] = FourCombine;
-            SBox0[0, 1] = FirstCombine;
-
+            SBox1 = new BitArray[4, 4] { { FirstCombine, FourCombine, SecondCombine, ThirdCombine},
+                                         { SecondCombine, FirstCombine, FourCombine, ThirdCombine},
+                                         { ThirdCombine, FirstCombine, FourCombine, FirstCombine},
+                                         { SecondCombine, FourCombine, FirstCombine, ThirdCombine}};
         }
 
         public void Read_File(string ArchivoNuevo, string ArchivoCodificado, string PermutacionPath, int numero)
