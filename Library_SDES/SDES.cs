@@ -35,17 +35,13 @@ namespace Library_SDES
         {
         }
 
-        public void Read_File(string ArchivoNuevo, string ArchivoCodificado, char[] Numero)
+        public void Read_File(string ArchivoNuevo, string ArchivoCodificado, string PermutacionPath, int numero)
         {
             BitArray NuevoByte = new BitArray(8);
-            
-            string UploadFolder = "";
+           
             byte[] Arreglo = new byte[120000];
 
-            UploadFolder = Path.Combine(fistenviroment.ContentRootPath, "Helpers");
-            string filepath = Path.Combine(UploadFolder, "Permutations.txt");
-
-            string Configuracion = System.IO.File.ReadAllText(filepath);
+            string Configuracion = System.IO.File.ReadAllText(PermutacionPath);
 
             Permutaciones = Regex.Split(Configuracion, "[\r\n]+");
 
