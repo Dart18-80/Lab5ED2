@@ -10,9 +10,11 @@ namespace Library_SDES
         public void Read_File(string ArchivoNuevo, string ArchivoCodificado, char[] Numero)
         {
             byte[] Arreglo = new byte[120000];
+
             using (Stream Memory = new MemoryStream())
             {
                 long Caracteres = 0;
+
                 using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
                 {
                     Caracteres = Text.Length;
@@ -31,10 +33,6 @@ namespace Library_SDES
                         contador++;
                     }
                 }
-
-
-
-
 
                 using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
                 {
