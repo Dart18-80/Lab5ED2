@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace Library_SDES
 {
-    public class SDES 
+    public class SDES
     {
         public readonly IHostingEnvironment fistenviroment;
         protected string[] Permutaciones = new string[6];
@@ -23,7 +23,9 @@ namespace Library_SDES
                                                 { 11, 00, 01, 00 },
                                                 { 10, 01, 00, 11 }};
 
+
         public BitArray SBOX1F1C1 = new BitArray(8);
+
         protected SDES(IHostingEnvironment enviroment)
         {
             this.fistenviroment = enviroment;
@@ -62,8 +64,6 @@ namespace Library_SDES
                     {
                         Arreglo[contador] = nuevo;
                         NuevoByte = new BitArray(nuevo);
-                        //
-                        
 
 
                         // Enviar Binario a tu funcion de compresion
@@ -82,83 +82,14 @@ namespace Library_SDES
                 }
             }
         }
-
-        public int[] Convert_Binario(int Num) 
+        public void CifradoSDES(int[] Binario)
         {
-            int[] binario = new int[8];
-            int i = 0;
-            while (Num > 0)
-            {
-                binario[i] = Num % 2;
-                Num = Num / 2;
-                i++;
-            }
-            return binario;
+
         }
-
-        public string DecimalBinario(int numero) 
+        public void CreacionLlave(byte numero) 
         {
-            string binario = "";
-            if (numero > 0)
-            {
-                while (numero > 0)
-                {
-                    if (numero % 2 == 0)
-                    {
-                        binario = "0" + binario;
-                    }
-                    else
-                    {
-                        binario = "1" + binario;
-                    }
-                    numero = (int)(numero / 2);
-                }
-                return binario;
-            }
-            else
-            {
-                if (numero == 0)
-                {
-                    return "0";
-                }
-                else
-                {
-                    return "";
-                }
-            }
-        }
-        public string LlenarEspacio(byte Numeros, int forma)//forma para saber si es de 8 o 10 bits
-        {
-            char[] Base = Convert.ToString(Numeros).ToCharArray();
-            if (Base.Length != 0)
-            {
-                int Flatante = forma - Base.Length;
-                string falt = "";
-
-                for (int i = 0; i < Flatante; i++)
-                {
-                    falt += "0";
-                }
-                return (falt+Convert.ToString(Numeros));
-            }
-            else
-            {
-                return "";
-            }
-        }
-        public int BinarioDecinal(char[] numero) 
-        {
-            int sum = 0;
-            Array.Reverse(numero);
-            for (int i = 0; i < numero.Length; i++)
-            {
-                if (numero[i].ToString() == "1")
-                {
-                    sum += (int)Math.Pow(2, i);
-
-                }
-            }
-            return sum;
+            
+            
         }
     }
 }
