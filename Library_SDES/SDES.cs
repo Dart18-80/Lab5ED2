@@ -7,6 +7,15 @@ namespace Library_SDES
 {
     public class SDES
     {
+        public int[] Permutaciones() 
+        {
+            string ArchivoPermutacion = "";
+            int Numeros = 0;
+            using (Stream Permu = new FileStream(ArchivoPermutacion, FileMode.Open, FileAccess.Read)) 
+            {
+                            }
+        }
+
         public void Read_File(string ArchivoNuevo, string ArchivoCodificado, char[] Numero)
         {
             byte[] Arreglo = new byte[120000];
