@@ -16,6 +16,15 @@ namespace Library_SDES
         protected BitArray[,] SBox0 = new BitArray[4, 4];
         protected BitArray[,] SBox1 = new BitArray[4, 4];
 
+        protected int[] P10 = new int[10];
+        protected int[] P8 = new int[8];
+        protected int[] P4 = new int[4];
+        protected int[] EP = new int[8];
+        protected int[] IP = new int[8];
+        protected int[] IP1 = new int[8];
+
+
+
 
 
 
@@ -107,5 +116,7 @@ namespace Library_SDES
             
             
         }
+
+
     }
 }
