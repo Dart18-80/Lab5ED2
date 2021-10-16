@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Library_SDES
 {
-    public class SDES 
+    public class SDES
     {
         public readonly IHostingEnvironment fistenviroment;
         protected string[] Permutaciones = new string[6];
@@ -20,7 +20,7 @@ namespace Library_SDES
         protected byte[,] SBox1 = new byte[4, 4] {{ 00, 01, 10, 11 },
                                                 { 10, 00, 01, 11 },
                                                 { 11, 00, 01, 00 },
-                                                { 10, 01, 00, 11 }}; 
+                                                { 10, 01, 00, 11 }};
         protected SDES(IHostingEnvironment enviroment)
         {
             this.fistenviroment = enviroment;
@@ -52,7 +52,7 @@ namespace Library_SDES
                     foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                     {
                         Arreglo[contador] = nuevo;
-                        int[] Binario = Convert_Binario(nuevo); 
+                        int[] Binario = Convert_Binario(nuevo);
 
                         // Enviar Binario a tu funcion de compresion
 
@@ -70,10 +70,18 @@ namespace Library_SDES
                 }
             }
         }
+        public void CifradoSDES(int[] Binario)
+        {
 
+        }
+        public void CreacionLlave(int numero) 
+        {
+            string num = DecimalBinario(numero);
+            
+        }
         public int[] Convert_Binario(int Num) 
         {
-            int[] binario = new int[8];
+            int[] binario = new int[Num];
             int i = 0;
             while (Num > 0)
             {
