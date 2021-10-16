@@ -13,10 +13,7 @@ namespace Library_SDES
         public readonly IHostingEnvironment fistenviroment;
         protected string[] Permutaciones = new string[6];
 
-        protected byte[,] SBox0 = new byte[4, 4]{{ 01, 00, 11, 10 },
-                                                { 11, 10, 01, 00 },
-                                                { 00, 10, 01, 11 },
-                                                { 11, 01, 11, 10 }};
+        protected BitArray[,] SBox0 = new BitArray[4, 4];
 
         protected byte[,] SBox1 = new byte[4, 4] {{ 00, 01, 10, 11 },
                                                 { 10, 00, 01, 11 },
@@ -33,6 +30,26 @@ namespace Library_SDES
 
         public SDES()
         {
+            BitArray FirstCombine = new BitArray(2);
+            FirstCombine[0] = false;
+            FirstCombine[1] = false;
+
+            BitArray SecondCombine = new BitArray(2);
+            SecondCombine[0] = true;
+            SecondCombine[1] = false;
+
+            BitArray ThirdCombine = new BitArray(2);
+            ThirdCombine[0] = true;
+            ThirdCombine[1] = true;
+
+            BitArray FourCombine = new BitArray(2);
+            FourCombine[0] = false;
+            FourCombine[1] = true;
+
+
+            SBox0[0, 0] = FourCombine;
+            SBox0[0, 1] = FirstCombine;
+
         }
 
         public void Read_File(string ArchivoNuevo, string ArchivoCodificado, string PermutacionPath, int numero)
