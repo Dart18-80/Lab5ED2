@@ -58,5 +58,52 @@ namespace Library_SDES
             }
             return binario;
         }
+
+        public string DecimalBinario(int numero) 
+        {
+            string binario = "";
+            if (numero > 0)
+            {
+                while (numero > 0)
+                {
+                    if (numero % 2 == 0)
+                    {
+                        binario = "0" + binario;
+                    }
+                    else
+                    {
+                        binario = "1" + binario;
+                    }
+                    numero = (int)(numero / 2);
+                }
+                return binario;
+            }
+            else
+            {
+                if (numero == 0)
+                {
+                    return "0";
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
+
+        public int BinarioDecinal(char[] numero) 
+        {
+            int sum = 0;
+            Array.Reverse(numero);
+            for (int i = 0; i < numero.Length; i++)
+            {
+                if (numero[i].ToString() == "1")
+                {
+                    sum += (int)Math.Pow(2, i);
+
+                }
+            }
+            return sum;
+        }
     }
 }
