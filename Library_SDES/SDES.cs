@@ -1,24 +1,42 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Hosting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Library_SDES
 {
     public class SDES
     {
-        public int[] Permutaciones() 
+        public readonly IHostingEnvironment fistenviroment;
+        protected string[] Permutaciones = new string[6];
+
+        protected int[,] SBox0 = new int[4, 4] { { 01, 00, 11, 10 },
+                                                { 11, 10, 01, 00 },
+                                                { 00, 10, 01, 11 },
+                                                { 11, 01, 11, 10 }};
+
+        protected int[,] SBox1 = new int[4, 4] {{ 00, 01, 10, 11 },
+                                                { 10, 00, 01, 11 },
+                                                { 11, 00, 01, 00 },
+                                                { 10, 01, 00, 11 }}; 
+        public SDES(IHostingEnvironment enviroment)
         {
-            string ArchivoPermutacion = "";
-            int Numeros = 0;
-            using (Stream Permu = new FileStream(ArchivoPermutacion, FileMode.Open, FileAccess.Read)) 
-            {
-                            }
+            this.fistenviroment = enviroment;
         }
 
         public void Read_File(string ArchivoNuevo, string ArchivoCodificado, char[] Numero)
         {
+            string UploadFolder = "";
             byte[] Arreglo = new byte[120000];
+
+            UploadFolder = Path.Combine(fistenviroment.ContentRootPath, "Helpers");
+            string filepath = Path.Combine(UploadFolder, "Permutations.txt");
+
+            string Configuracion = System.IO.File.ReadAllText(filepath);
+
+            Permutaciones = Regex.Split(Configuracion, "[\r\n]+");
 
             using (Stream Memory = new MemoryStream())
             {
