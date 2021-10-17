@@ -197,6 +197,33 @@ namespace Library_SDES
             F11[0] = EPK2[0];   C11[0] = EPK2[1];
             F11[1] = EPK2[3];   C11[1] = EPK2[2];
 
+            byte S00 = Convert.ToByte(F01);
+            byte S01 = Convert.ToByte(C01);
+            byte S10 = Convert.ToByte(F11);
+            byte S11 = Convert.ToByte(C11);
+
+            BitArray S0 = SBox0[S00, S01];
+            BitArray S1 = SBox0[S10, S11];
+
+            BitArray S0S1 = new BitArray(4);
+            S0S1[0] = S0[0]; S0S1[1] = S0[1];
+            S0S1[2] = S1[0]; S0S1[2] = S1[1];
+
+            BitArray PermuP4 = PermutacionP4(S0S1);
+
+            BitArray XORP4 = PermuP4.Xor(IPM1);
+
+            BitArray SW0 = new BitArray(4);
+            BitArray SW1 = new BitArray(4);
+            SW0[0] = IPM2[0]; SW0[1] = IPM2[1]; SW0[2] = IPM2[2]; SW0[3] = IPM2[3];
+            SW1[0] = XORP4[0]; SW1[1] = XORP4[1]; SW1[2] = XORP4[2]; SW1[3] = XORP4[3];
+
+            BitArray EPP1 = PermutacionEP(SW1);
+
+            BitArray XORK2 = EPP1.Xor(K2);
+
+
+
 
         }
         public void CreacionLlave(BitArray numero) 
