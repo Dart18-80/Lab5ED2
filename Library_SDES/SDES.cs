@@ -184,7 +184,7 @@ namespace Library_SDES
             BitArray Nuevo = new BitArray(4);
             for (int i = 0; i < 4; i++)
             {
-                Nuevo[i] = Cifrar[P4[i]];
+                Nuevo[i] = Cifrar[P4[i]-1];
             }
             return Nuevo;
         }
@@ -194,7 +194,7 @@ namespace Library_SDES
             BitArray Nuevo = new BitArray(8);
             for (int i = 0; i < 8; i++)
             {
-                Nuevo[i] = Cifrar[IP[i]];
+                Nuevo[i] = Cifrar[IP[i]-1];
             }
             return Nuevo;
         }
@@ -203,7 +203,7 @@ namespace Library_SDES
             BitArray Nuevo = new BitArray(8);
             for (int i = 0; i < 8; i++)
             {
-                Nuevo[i] = Cifrar[P8[i]];
+                Nuevo[i] = Cifrar[P8[i]-1];
             }
             return Nuevo;
         }
@@ -223,7 +223,7 @@ namespace Library_SDES
             BitArray Nuevo = new BitArray(8);
             for (int i = 0; i < 8; i++)
             {
-                Nuevo[i] = Cifrar[IP1[i]];
+                Nuevo[i] = Cifrar[IP1[i]-1];
             }
             return Nuevo;
         }
