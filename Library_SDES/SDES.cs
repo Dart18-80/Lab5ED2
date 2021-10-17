@@ -77,7 +77,19 @@ namespace Library_SDES
                 ceros += "0";
             }
             numBinario = ceros + numBinario;
-            key = new BitArray(numero);
+            string[] arraybinario = Regex.Split(numBinario, "");
+
+            for (int i = 0; i < 10; i++)
+            {
+                if (arraybinario[i+1]=="1")
+                {
+                    key[i] = true;
+                }
+                else 
+                {
+                    key[i] = false;
+                }
+            }
 
             byte[] Arreglo = new byte[120000];
 
@@ -162,7 +174,7 @@ namespace Library_SDES
             BitArray Nuevo = new BitArray(10);
             for (int i = 0; i < 10; i++) 
             {
-                Nuevo[i] = Cifrar[P10[i]];
+                Nuevo[i] = Cifrar[P10[i]-1];
             }
             return Nuevo;
         }
