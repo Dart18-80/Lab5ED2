@@ -15,6 +15,10 @@ namespace Library_SDES
         protected BitArray[,] SBox0 = new BitArray[4, 4];
         protected BitArray[,] SBox1 = new BitArray[4, 4];
 
+        protected BitArray K1 = new BitArray(8);
+        protected BitArray K2 = new BitArray(8);
+
+
         protected int[] P10 = new int[10];
         protected int[] P8 = new int[8];
         protected int[] P4 = new int[4];
@@ -167,6 +171,39 @@ namespace Library_SDES
         public void CreacionLlave(BitArray numero) 
         {
             BitArray P10op = PermutacionP10(numero);
+            BitArray LS10 = new BitArray(5);
+            BitArray LS11 = new BitArray(5);
+
+            BitArray ULS = new BitArray(10);
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (i == 4)
+                {
+                    LS10[i] = numero[i + 1];
+                    LS11[i] = numero[1];
+                }
+                else
+                {
+                    LS10[i] = numero[i + 1];
+                    LS11[i] = numero[i + 6];
+                }
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                if (i < 5)
+                {
+                    ULS[i] = LS10[i];
+                }
+                else
+                {
+                    ULS[i] = LS11[i-5];
+                }
+            }
+
+           K1 = PermutacionP8(ULS);
+
         }
 
         BitArray PermutacionP10(BitArray Cifrar)
