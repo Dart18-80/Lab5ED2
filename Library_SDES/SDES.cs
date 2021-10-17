@@ -27,7 +27,8 @@ namespace Library_SDES
 
 
 
-        public BitArray SBOX1F1C1 = new BitArray(8);
+        protected BitArray SBOX1F1C1 = new BitArray(8);
+        protected BitArray key = new BitArray(8);
 
         protected SDES(IHostingEnvironment enviroment)
         {
@@ -66,7 +67,9 @@ namespace Library_SDES
         public void Read_File(string ArchivoNuevo, string ArchivoCodificado, string PermutacionPath, int numero)
         {
             BitArray NuevoByte = new BitArray(8);
-           
+            byte[] KeyByte = { (byte)numero };
+            key = new BitArray(KeyByte);
+
             byte[] Arreglo = new byte[120000];
 
             string Configuracion = System.IO.File.ReadAllText(PermutacionPath);
@@ -145,6 +148,44 @@ namespace Library_SDES
             
         }
 
+        BitArray PermutacionP10(BitArray Cifrar)
+        {
+            BitArray Nuevo = new BitArray(10);
+            for (int i = 0; i < 10; i++) 
+            {
+                Nuevo[i] = Cifrar[P10[i]];
+            }
+            return Nuevo;
+        }
+
+        BitArray PermutacionP4(BitArray Cifrar)
+        {
+            BitArray Nuevo = new BitArray(4);
+            for (int i = 0; i < 4; i++)
+            {
+                Nuevo[i] = Cifrar[P4[i]];
+            }
+            return Nuevo;
+        }
+
+        BitArray PermutacionIP(BitArray Cifrar)
+        {
+            BitArray Nuevo = new BitArray(8);
+            for (int i = 0; i < 8; i++)
+            {
+                Nuevo[i] = Cifrar[IP[i]];
+            }
+            return Nuevo;
+        }
+        BitArray PermutacionP8(BitArray Cifrar)
+        {
+            BitArray Nuevo = new BitArray(8);
+            for (int i = 0; i < 8; i++)
+            {
+                Nuevo[i] = Cifrar[P4[i]];
+            }
+            return Nuevo;
+        }
 
     }
 }
