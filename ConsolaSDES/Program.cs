@@ -12,7 +12,7 @@ namespace ConsolaSDES
             string Prueba1 = "C:\\Users\\randr\\OneDrive\\Escritorio\\prueba.txt";
             string respuesa = "C:\\Users\\randr\\OneDrive\\Escritorio\\Respuesta.txt";
             string permutation = "C:\\Users\\randr\\OneDrive\\Escritorio\\Permutations.txt";
-            ds.Read_File(Prueba1, respuesa, permutation, 546);
+            ds.Read_File(Prueba1, respuesa, permutation, 1);
             Console.ReadKey();
         }
     }

@@ -28,7 +28,7 @@ namespace Library_SDES
 
 
         protected BitArray SBOX1F1C1 = new BitArray(8);
-        protected BitArray key = new BitArray(8);
+        protected BitArray key = new BitArray(10);
 
         protected SDES(IHostingEnvironment enviroment)
         {
@@ -67,8 +67,17 @@ namespace Library_SDES
         public void Read_File(string ArchivoNuevo, string ArchivoCodificado, string PermutacionPath, int numero)
         {
             BitArray NuevoByte = new BitArray(8);
-            byte[] KeyByte = { (byte)numero };
-            key = new BitArray(KeyByte);
+            string numBinario = Convert.ToString(numero, 2);
+            string[] cadenas = numBinario.Split();
+            string ceros = "";
+            int falta = 10-cadenas[0].Length;
+
+            for (int i = 0; i < falta; i++)
+            {
+                ceros += "0";
+            }
+            numBinario = ceros + numBinario;
+            key = new BitArray(numero);
 
             byte[] Arreglo = new byte[120000];
 
@@ -108,6 +117,7 @@ namespace Library_SDES
                 }            
             }
 
+            CreacionLlave(key);
             long Caracteres = 0;
 
             using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
@@ -142,10 +152,9 @@ namespace Library_SDES
         {
 
         }
-        public void CreacionLlave(byte numero) 
+        public void CreacionLlave(BitArray numero) 
         {
-            
-            
+            BitArray P10op = PermutacionP10(numero);
         }
 
         BitArray PermutacionP10(BitArray Cifrar)
