@@ -73,37 +73,33 @@ namespace Library_SDES
             string Configuracion = System.IO.File.ReadAllText(PermutacionPath);
 
             Permutaciones = Regex.Split(Configuracion, "[\r\n]+");
+            long Caracteres = 0;
 
-            using (Stream Memory = new MemoryStream())
+            using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
             {
-                long Caracteres = 0;
-
-                using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
+                Caracteres = Text.Length;
+            }
+            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
+            {
+                int contador = 0;
+                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                 {
-                    Caracteres = Text.Length;
+                    Arreglo[contador] = nuevo;
+                    NuevoByte = new BitArray(nuevo);
+
+
+                    // Enviar Binario a tu funcion de compresion
+
+
+                    contador++;
                 }
-                using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
+            }
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
+            {
+                for (int i = 0; i <= Caracteres; i++)
                 {
-                    int contador = 0;
-                    foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
-                    {
-                        Arreglo[contador] = nuevo;
-                        NuevoByte = new BitArray(nuevo);
-
-
-                        // Enviar Binario a tu funcion de compresion
-
-
-                        contador++;
-                    }
-                }
-
-                using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
-                {
-                    for (int i = 0; i <= Caracteres; i++)
-                    {
-                        writer.Write(Arreglo[i]);
-                    }
+                    writer.Write(Arreglo[i]);
                 }
             }
         }
