@@ -191,7 +191,27 @@ namespace Library_SDES
             BitArray Nuevo = new BitArray(8);
             for (int i = 0; i < 8; i++)
             {
-                Nuevo[i] = Cifrar[P4[i]];
+                Nuevo[i] = Cifrar[P8[i]];
+            }
+            return Nuevo;
+        }
+
+        BitArray PermutacionEP(BitArray Cifrar)
+        {
+            BitArray Nuevo = new BitArray(8);
+            for (int i = 0; i < 8; i++)
+            {
+                Nuevo[i] = Cifrar[EP[i]];
+            }
+            return Nuevo;
+        }
+
+        BitArray PermutacionIP1(BitArray Cifrar)
+        {
+            BitArray Nuevo = new BitArray(8);
+            for (int i = 0; i < 8; i++)
+            {
+                Nuevo[i] = Cifrar[IP1[i]];
             }
             return Nuevo;
         }
