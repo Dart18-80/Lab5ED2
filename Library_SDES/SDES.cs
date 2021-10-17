@@ -85,6 +85,8 @@ namespace Library_SDES
             }
 
             byte[] Arreglo = new byte[120000];
+            byte[] ArregloPrueba = new byte[120000];
+
 
             string Configuracion = System.IO.File.ReadAllText(PermutacionPath);
 
@@ -154,15 +156,23 @@ namespace Library_SDES
                     {
                         CifratoDecifrado = CifradoDecifradoSDES(Aux, 1);
                     }
-                    Arreglo[contador] = Convert.ToByte(CifratoDecifrado);
+                    byte[] ArregloDC = new byte[1];
+                    BitArray Aux1 = new BitArray(8);
 
+                    for (int i = 0; i < 8; i++)
+                    {
+                        Aux1[i] = CifratoDecifrado[7-i];
+                    }
+                    Aux1.CopyTo(ArregloDC, 0);
+                    Arreglo[contador] = ArregloDC[0];
+                    ArregloPrueba[contador] = nuevo;
                     contador++;
                 }
             }
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
             {
-                for (int i = 0; i <= Caracteres; i++)
+                for (int i = 0; i < Caracteres; i++)
                 {
                     writer.Write(Arreglo[i]);
                 }
@@ -208,16 +218,16 @@ namespace Library_SDES
             BitArray XorEP2 = new BitArray(8);
             if (FormaSDES == 0)
             {
-                XorEP2 = EPP.Xor(K2);
+                XorEP2 = EPP1.Xor(K2);
             }
             else
             {
-                XorEP2 = EPP.Xor(K1);
+                XorEP2 = EPP1.Xor(K1);
             }
 
             BitArray S1S1 = FilasColum(XorEP2);
 
-            BitArray Permu1P4 = PermutacionP4(S0S1);
+            BitArray Permu1P4 = PermutacionP4(S1S1);
 
             BitArray XOR1P4 = Permu1P4.Xor(SW0);
 
@@ -245,13 +255,13 @@ namespace Library_SDES
             {
                 if (i == 4)
                 {
-                    LS10[i] = numero[i + 1];
-                    LS11[i] = numero[0];
+                    LS10[i] = P10op[i + 1];
+                    LS11[i] = P10op[0];
                 }
                 else
                 {
-                    LS10[i] = numero[i + 1];
-                    LS11[i] = numero[i + 6];
+                    LS10[i] = P10op[i + 1];
+                    LS11[i] = P10op[i + 6];
                 }
             }
 
@@ -306,7 +316,7 @@ namespace Library_SDES
             int S11 = IndiceMatriz(C11[0], C11[1]);
 
             BitArray S0 = SBox0[S00, S01];
-            BitArray S1 = SBox0[S10, S11];
+            BitArray S1 = SBox1[S10, S11];
 
             BitArray S0S1 = new BitArray(4);
             S0S1[0] = S0[0]; S0S1[1] = S0[1];
