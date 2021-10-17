@@ -57,7 +57,7 @@ namespace Library_SDES
                                          { SecondCombine, FourCombine, FirstCombine, ThirdCombine}};
         }
 
-        public void Read_File(string ArchivoNuevo, string ArchivoCodificado, string PermutacionPath, int numero)
+        public void Read_File(string ArchivoNuevo, string ArchivoCodificado, string PermutacionPath, int numero, int FormaSDES)
         {
             BitArray NuevoByte = new BitArray(8);
             string numBinario = Convert.ToString(numero, 2);
@@ -136,9 +136,16 @@ namespace Library_SDES
                 foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                 {
                     Arreglo[contador] = nuevo;
-                    NuevoByte = new BitArray(nuevo);
+                    byte[] KeyByteNuevo = {nuevo};
 
+                    BitArray KeyNuevo = new BitArray(KeyByteNuevo);
+                    BitArray Aux = new BitArray(8);
 
+                    for (int i = 0; i < 8; i++)
+                    {
+                        Aux[i] = KeyNuevo[7 - i];
+                    }
+                    CifradoDecifradoSDES(Aux,0);
                     // Enviar Binario a tu funcion de compresion
 
 
@@ -154,8 +161,19 @@ namespace Library_SDES
                 }
             }
         }
-        public void CifradoSDES(BitArray NumCifrar)
+        public void CifradoDecifradoSDES(BitArray NumCifrar, int FormaSDES)
         {
+            BitArray IP = PermutacionIP(NumCifrar);//Funcion IP
+            BitArray IPM1 = new BitArray(4);
+            BitArray IPM2 = new BitArray(4);
+
+            for (int i = 0; i < 4; i++)
+            {
+                IPM1[i] = IP[i];
+                IPM2[i] = IP[4+i];
+            }
+
+            BitArray EP = PermutacionEP(IPM2);//Funcion EP
 
         }
         public void CreacionLlave(BitArray numero) 
