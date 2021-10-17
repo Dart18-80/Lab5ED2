@@ -175,6 +175,7 @@ namespace Library_SDES
 
             BitArray EP = PermutacionEP(IPM2);//Funcion EP
 
+            BitArray XorEP = EP.Xor(K1);
         }
         public void CreacionLlave(BitArray numero) 
         {
