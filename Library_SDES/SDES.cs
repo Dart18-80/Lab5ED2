@@ -135,7 +135,6 @@ namespace Library_SDES
                 int contador = 0;
                 foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                 {
-                    Arreglo[contador] = nuevo;
                     byte[] KeyByteNuevo = {nuevo};
 
                     BitArray KeyNuevo = new BitArray(KeyByteNuevo);
@@ -145,9 +144,17 @@ namespace Library_SDES
                     {
                         Aux[i] = KeyNuevo[7 - i];
                     }
-                    CifradoDecifradoSDES(Aux,0);
-                    // Enviar Binario a tu funcion de compresion
 
+                    BitArray CifratoDecifrado = new BitArray(8);
+                    if (FormaSDES==0)
+                    {
+                        CifratoDecifrado = CifradoDecifradoSDES(Aux, 0);
+                    }
+                    else
+                    {
+                        CifratoDecifrado = CifradoDecifradoSDES(Aux, 1);
+                    }
+                    Arreglo[contador] = Convert.ToByte(CifratoDecifrado);
 
                     contador++;
                 }
@@ -161,7 +168,7 @@ namespace Library_SDES
                 }
             }
         }
-        public void CifradoDecifradoSDES(BitArray NumCifrar, int FormaSDES)
+        BitArray CifradoDecifradoSDES(BitArray NumCifrar, int FormaSDES)
         {
             BitArray IPP = PermutacionIP(NumCifrar);//Funcion IP
             BitArray IPM1 = new BitArray(4);
@@ -175,39 +182,17 @@ namespace Library_SDES
 
             BitArray EPP = PermutacionEP(IPM2);//Funcion EP
 
-            BitArray XorEP = EPP.Xor(K1);
-
-            BitArray EPK1 = new BitArray(4);
-            BitArray EPK2 = new BitArray(4);
-
-            for (int i = 0; i < 4; i++)
+            BitArray XorEP = new BitArray(8);
+            if (FormaSDES==0)
             {
-                EPK1[i] = XorEP[i];
-                EPK2[i] = XorEP[4 + i];
+                 XorEP = EPP.Xor(K1);
             }
-            
-            BitArray F01 = new BitArray(2);
-            BitArray C01 = new BitArray(2);
-            BitArray F11 = new BitArray(2);
-            BitArray C11 = new BitArray(2);
+            else
+            {
+                 XorEP = EPP.Xor(K2);
+            }
 
-            F01[0] = EPK1[0];   C01[0] = EPK1[1];
-            F01[1] = EPK1[3];   C01[1] = EPK1[2];
-
-            F11[0] = EPK2[0];   C11[0] = EPK2[1];
-            F11[1] = EPK2[3];   C11[1] = EPK2[2];
-
-            byte S00 = Convert.ToByte(F01);
-            byte S01 = Convert.ToByte(C01);
-            byte S10 = Convert.ToByte(F11);
-            byte S11 = Convert.ToByte(C11);
-
-            BitArray S0 = SBox0[S00, S01];
-            BitArray S1 = SBox0[S10, S11];
-
-            BitArray S0S1 = new BitArray(4);
-            S0S1[0] = S0[0]; S0S1[1] = S0[1];
-            S0S1[2] = S1[0]; S0S1[2] = S1[1];
+            BitArray S0S1 = FilasColum(XorEP);
 
             BitArray PermuP4 = PermutacionP4(S0S1);
 
@@ -220,11 +205,29 @@ namespace Library_SDES
 
             BitArray EPP1 = PermutacionEP(SW1);
 
-            BitArray XORK2 = EPP1.Xor(K2);
+            BitArray XorEP2 = new BitArray(8);
+            if (FormaSDES == 0)
+            {
+                XorEP2 = EPP.Xor(K2);
+            }
+            else
+            {
+                XorEP2 = EPP.Xor(K1);
+            }
 
+            BitArray S1S1 = FilasColum(XorEP2);
 
+            BitArray Permu1P4 = PermutacionP4(S0S1);
 
+            BitArray XOR1P4 = Permu1P4.Xor(SW0);
 
+            BitArray IPN1 = new BitArray(8);
+            IPN1[0] = XOR1P4[0];   IPN1[1] = XOR1P4[1];   IPN1[2] = XOR1P4[2];   IPN1[3] = XOR1P4[3];
+            IPN1[4] = SW1[0];  IPN1[5] = SW1[1];  IPN1[6] = SW1[2];   IPN1[7] = SW1[3];
+
+            BitArray IPInversa = PermutacionIP1(IPN1);
+
+            return IPInversa;
         }
         public void CreacionLlave(BitArray numero) 
         {
@@ -275,6 +278,42 @@ namespace Library_SDES
             K2 = PermutacionP8(ULS2);
         }
 
+        BitArray FilasColum(BitArray XorEP) 
+        {
+            BitArray EPK1 = new BitArray(4);
+            BitArray EPK2 = new BitArray(4);
+
+            for (int i = 0; i < 4; i++)
+            {
+                EPK1[i] = XorEP[i];
+                EPK2[i] = XorEP[4 + i];
+            }
+
+            BitArray F01 = new BitArray(2);
+            BitArray C01 = new BitArray(2);
+            BitArray F11 = new BitArray(2);
+            BitArray C11 = new BitArray(2);
+
+            F01[0] = EPK1[0]; C01[0] = EPK1[1];
+            F01[1] = EPK1[3]; C01[1] = EPK1[2];
+
+            F11[0] = EPK2[0]; C11[0] = EPK2[1];
+            F11[1] = EPK2[3]; C11[1] = EPK2[2];
+
+            byte S00 = Convert.ToByte(F01);
+            byte S01 = Convert.ToByte(C01);
+            byte S10 = Convert.ToByte(F11);
+            byte S11 = Convert.ToByte(C11);
+
+            BitArray S0 = SBox0[S00, S01];
+            BitArray S1 = SBox0[S10, S11];
+
+            BitArray S0S1 = new BitArray(4);
+            S0S1[0] = S0[0]; S0S1[1] = S0[1];
+            S0S1[2] = S1[0]; S0S1[2] = S1[1];
+
+            return S0S1;
+        }
         BitArray CombineLS(BitArray LS10, BitArray LS11) 
         {
             BitArray ULS = new BitArray(10);
