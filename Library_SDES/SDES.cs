@@ -300,10 +300,10 @@ namespace Library_SDES
             F11[0] = EPK2[0]; C11[0] = EPK2[1];
             F11[1] = EPK2[3]; C11[1] = EPK2[2];
 
-            byte S00 = Convert.ToByte(F01);
-            byte S01 = Convert.ToByte(C01);
-            byte S10 = Convert.ToByte(F11);
-            byte S11 = Convert.ToByte(C11);
+            int S00 = IndiceMatriz(F01[0], F01[1]);
+            int S01 = IndiceMatriz(C01[0], C01[1]);
+            int S10 = IndiceMatriz(F11[0], F11[1]);
+            int S11 = IndiceMatriz(C11[0], C11[1]);
 
             BitArray S0 = SBox0[S00, S01];
             BitArray S1 = SBox0[S10, S11];
@@ -314,6 +314,20 @@ namespace Library_SDES
 
             return S0S1;
         }
+
+        int IndiceMatriz(bool X , bool Y) 
+        {
+            if (X == true && Y == true)
+                return 3;
+            else if (X == false && Y == false)
+                return 0;
+            else if (X == true && Y == false)
+                return 2;
+            else
+                return 1;
+        }
+
+
         BitArray CombineLS(BitArray LS10, BitArray LS11) 
         {
             BitArray ULS = new BitArray(10);
