@@ -73,9 +73,36 @@ namespace Library_SDES
 
             string[] Permutaciones = Regex.Split(Configuracion, "[\r\n]+");
             string[] P10string = Regex.Split(Permutaciones[0].ToString(), ",");
+            string[] P8String = Regex.Split(Permutaciones[1].ToString(), ",");
+            string[] P4String = Regex.Split(Permutaciones[2].ToString(), ",");
+            string[] EPString = Regex.Split(Permutaciones[3].ToString(), ",");
+            string[] IPString = Regex.Split(Permutaciones[4].ToString(), ",");
+            string[] IP1String = Regex.Split(Permutaciones[5].ToString(), ",");
+
             for (int i = 0; i < 10; i++)
             {
-                P10[i] = Convert.ToInt32(P10string[i].ToString());
+                if (i < 4)
+                {
+
+                    P10[i] = Convert.ToInt32(P10string[i].ToString());
+                    P8[i] = Convert.ToInt32(P8String[i].ToString());
+                    P4[i] = Convert.ToInt32(P4String[i].ToString());
+                    EP[i] = Convert.ToInt32(EPString[i].ToString());
+                    IP[i] = Convert.ToInt32(IPString[i].ToString());
+                    IP1[i] = Convert.ToInt32(IP1String[i].ToString());
+                }
+                else if (i < 8)
+                {
+                    P10[i] = Convert.ToInt32(P10string[i].ToString());
+                    P8[i] = Convert.ToInt32(P8String[i].ToString());
+                    EP[i] = Convert.ToInt32(EPString[i].ToString());
+                    IP[i] = Convert.ToInt32(IPString[i].ToString());
+                    IP1[i] = Convert.ToInt32(IP1String[i].ToString());
+                }
+                else 
+                {
+                    P10[i] = Convert.ToInt32(P10string[i].ToString());
+                }            
             }
 
             long Caracteres = 0;
