@@ -18,7 +18,6 @@ namespace Library_SDES
         protected BitArray K1 = new BitArray(8);
         protected BitArray K2 = new BitArray(8);
 
-
         protected int[] P10 = new int[10];
         protected int[] P8 = new int[8];
         protected int[] P4 = new int[4];
@@ -26,18 +25,8 @@ namespace Library_SDES
         protected int[] IP = new int[8];
         protected int[] IP1 = new int[8];
 
-
-
-
-
-
         protected BitArray SBOX1F1C1 = new BitArray(8);
         protected BitArray key = new BitArray(10);
-
-        protected SDES(IHostingEnvironment enviroment)
-        {
-            this.fistenviroment = enviroment;
-        }
 
         public SDES()
         {
@@ -133,7 +122,8 @@ namespace Library_SDES
                 }            
             }
 
-            CreacionLlave(key);
+            CreacionLlave(key); // Se manda a crear k1 y k2 con la llave secreta
+
             long Caracteres = 0;
 
             using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
@@ -164,7 +154,7 @@ namespace Library_SDES
                 }
             }
         }
-        public void CifradoSDES(int[] Binario)
+        public void CifradoSDES(BitArray NumCifrar)
         {
 
         }
@@ -174,14 +164,18 @@ namespace Library_SDES
             BitArray LS10 = new BitArray(5);
             BitArray LS11 = new BitArray(5);
 
-            BitArray ULS = new BitArray(10);
+            BitArray LS20 = new BitArray(5);
+            BitArray LS21 = new BitArray(5);
+
+            BitArray ULS1 = new BitArray(10);
+            BitArray ULS2 = new BitArray(10);
 
             for (int i = 0; i < 5; i++)
             {
                 if (i == 4)
                 {
                     LS10[i] = numero[i + 1];
-                    LS11[i] = numero[1];
+                    LS11[i] = numero[0];
                 }
                 else
                 {
@@ -190,6 +184,32 @@ namespace Library_SDES
                 }
             }
 
+            ULS1 = CombineLS(LS10, LS11);
+
+            K1 = PermutacionP8(ULS1);
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (i<3)
+                {
+                    LS20[i] = LS10[i + 2];
+                    LS21[i] = LS11[i + 2];
+                }
+                else
+                {
+                    LS20[i] = LS10[i-3];
+                    LS21[i] = LS11[i - 3];
+                }
+            }
+
+            ULS2 = CombineLS(LS20, LS21);
+
+            K2 = PermutacionP8(ULS2);
+        }
+
+        BitArray CombineLS(BitArray LS10, BitArray LS11) 
+        {
+            BitArray ULS = new BitArray(10);
             for (int i = 0; i < 10; i++)
             {
                 if (i < 5)
@@ -198,14 +218,11 @@ namespace Library_SDES
                 }
                 else
                 {
-                    ULS[i] = LS11[i-5];
+                    ULS[i] = LS11[i - 5];
                 }
             }
-
-           K1 = PermutacionP8(ULS);
-
+            return ULS;
         }
-
         BitArray PermutacionP10(BitArray Cifrar)
         {
             BitArray Nuevo = new BitArray(10);
@@ -250,7 +267,7 @@ namespace Library_SDES
             BitArray Nuevo = new BitArray(8);
             for (int i = 0; i < 8; i++)
             {
-                Nuevo[i] = Cifrar[EP[i]];
+                Nuevo[i] = Cifrar[EP[i]-1];
             }
             return Nuevo;
         }
