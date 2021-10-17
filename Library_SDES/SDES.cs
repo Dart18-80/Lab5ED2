@@ -11,7 +11,6 @@ namespace Library_SDES
     public class SDES
     {
         public readonly IHostingEnvironment fistenviroment;
-        protected string[] Permutaciones = new string[6];
 
         protected BitArray[,] SBox0 = new BitArray[4, 4];
         protected BitArray[,] SBox1 = new BitArray[4, 4];
@@ -72,7 +71,13 @@ namespace Library_SDES
 
             string Configuracion = System.IO.File.ReadAllText(PermutacionPath);
 
-            Permutaciones = Regex.Split(Configuracion, "[\r\n]+");
+            string[] Permutaciones = Regex.Split(Configuracion, "[\r\n]+");
+            string[] P10string = Regex.Split(Permutaciones[0].ToString(), ",");
+            for (int i = 0; i < 10; i++)
+            {
+                P10[i] = Convert.ToInt32(P10string[i].ToString());
+            }
+
             long Caracteres = 0;
 
             using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
