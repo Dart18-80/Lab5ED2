@@ -163,19 +163,41 @@ namespace Library_SDES
         }
         public void CifradoDecifradoSDES(BitArray NumCifrar, int FormaSDES)
         {
-            BitArray IP = PermutacionIP(NumCifrar);//Funcion IP
+            BitArray IPP = PermutacionIP(NumCifrar);//Funcion IP
             BitArray IPM1 = new BitArray(4);
             BitArray IPM2 = new BitArray(4);
 
             for (int i = 0; i < 4; i++)
             {
-                IPM1[i] = IP[i];
-                IPM2[i] = IP[4+i];
+                IPM1[i] = IPP[i];
+                IPM2[i] = IPP[4+i];
             }
 
-            BitArray EP = PermutacionEP(IPM2);//Funcion EP
+            BitArray EPP = PermutacionEP(IPM2);//Funcion EP
 
-            BitArray XorEP = EP.Xor(K1);
+            BitArray XorEP = EPP.Xor(K1);
+
+            BitArray EPK1 = new BitArray(4);
+            BitArray EPK2 = new BitArray(4);
+
+            for (int i = 0; i < 4; i++)
+            {
+                EPK1[i] = XorEP[i];
+                EPK2[i] = XorEP[4 + i];
+            }
+            
+            BitArray F01 = new BitArray(2);
+            BitArray C01 = new BitArray(2);
+            BitArray F11 = new BitArray(2);
+            BitArray C11 = new BitArray(2);
+
+            F01[0] = EPK1[0];   C01[0] = EPK1[1];
+            F01[1] = EPK1[3];   C01[1] = EPK1[2];
+
+            F11[0] = EPK2[0];   C11[0] = EPK2[1];
+            F11[1] = EPK2[3];   C11[1] = EPK2[2];
+
+
         }
         public void CreacionLlave(BitArray numero) 
         {
