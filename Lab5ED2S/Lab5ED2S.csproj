@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="UploadDecifrado\" />
+    <Folder Include="UploadCifrado\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Library_SDES\Library_SDES.csproj" />
+  </ItemGroup>
+
+
+</Project>

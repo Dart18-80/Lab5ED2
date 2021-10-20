@@ -84,8 +84,8 @@ namespace Library_SDES
                 }
             }
 
-            byte[] Arreglo = new byte[120000];
-            byte[] ArregloPrueba = new byte[120000];
+            byte[] Arreglo = new byte[12000000];
+            byte[] ArregloPrueba = new byte[12000000];
 
 
             string Configuracion = System.IO.File.ReadAllText(PermutacionPath);
