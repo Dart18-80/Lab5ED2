@@ -5,11 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="UploadDecifrado\" />
-    <Folder Include="UploadCifrado\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Library_SDES\Library_SDES.csproj" />
   </ItemGroup>
 

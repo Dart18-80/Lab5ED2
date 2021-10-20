@@ -108,8 +108,8 @@ namespace Lab5ED2S.Controllers
                 }
                 else if (num == 3)
                 {
-
-                    string direccionNuevo = Path.Combine(uploadsFolder, nombreoriginal + ".txt");
+                    string nom = Convert.ToString(file.FileName).Replace(".txt", string.Empty);
+                    string direccionNuevo = Path.Combine(uploadsFolder, nom+ ".txt");
                     System.IO.File.WriteAllLines(direccionNuevo, new string[0]);
                     filepath = direccionNuevo;
                 }
