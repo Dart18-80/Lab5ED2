@@ -13,8 +13,10 @@ namespace Library_SDES
 
             int n = p * q;
             int phiN = (p - 1)*(q - 1);
+            //Se crea una lista sin los coprimos de p y q;
             List<int> ListaN = CrearLista(phiN, p, q);
-
+            //la lista se reduce a primos
+            ListaN = ListaPrimos(ListaN);
             int index = Rand.Next(0, ListaN.Count);
             int e = ListaN[index];
 
@@ -52,6 +54,32 @@ namespace Library_SDES
             {
                 LlavePrivadaPublica(p, q);
             }
+        }
+        public List<int> ListaPrimos(List<int> listaV) 
+        {
+            List<int> NuevaLista = new List<int>();
+            int total = 1;
+            int a = 0;
+            for (int i = 0; i < listaV.Count; i++)
+            {
+                for (int j = 1; j < listaV[i]+1; j++)
+                {
+                    if (listaV[i]%j==0)
+                    {
+                        a++;
+                    }
+                }
+                if (a!=2)
+                {
+
+                }
+                else
+                {
+                    NuevaLista.Add(listaV[i]);
+                }
+                a = 0;
+            }
+            return NuevaLista;
         }
         public int Modular(int num, int phi) 
         {
