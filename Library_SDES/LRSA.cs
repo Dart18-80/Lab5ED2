@@ -18,9 +18,9 @@ namespace Library_SDES
             int index = Rand.Next(0, ListaN.Count);
             int e = ListaN[index];
 
-            MatrizRSA[0, 0] =220;
-            MatrizRSA[0, 1] = 220;
-            MatrizRSA[1, 0] = 57;
+            MatrizRSA[0, 0] =phiN;
+            MatrizRSA[0, 1] = phiN;
+            MatrizRSA[1, 0] = e;
             MatrizRSA[1, 1] = 1;
 
             LlavePrivadaPublica(p, q);
