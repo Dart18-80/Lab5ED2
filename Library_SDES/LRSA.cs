@@ -18,20 +18,30 @@ namespace Library_SDES
             int index = Rand.Next(0, ListaN.Count);
             int e = ListaN[index];
 
-            MatrizRSA[0, 0] =phiN;
-            MatrizRSA[0, 1] = phiN;
-            MatrizRSA[1, 0] = e;
+            MatrizRSA[0, 0] =220;
+            MatrizRSA[0, 1] = 220;
+            MatrizRSA[1, 0] = 57;
             MatrizRSA[1, 1] = 1;
 
-            LlavePrivadaPublica();
+            LlavePrivadaPublica(p, q);
 
             string a = "";
         }
 
-        public void LlavePrivadaPublica() 
+        public void LlavePrivadaPublica(int p, int q) 
         {
             int Nuevo0=MatrizRSA[0, 0] - (MatrizRSA[0, 0] / MatrizRSA[1, 0]) * MatrizRSA[1, 0];
             int Nuevo1=MatrizRSA[0, 1] - (MatrizRSA[0, 0] / MatrizRSA[1, 0]) * MatrizRSA[1, 1];
+            int phi = (p-1)*(q-1);
+
+            if (Nuevo0<0)
+            {
+                Nuevo0 = Modular(Nuevo0, phi);
+            }
+            else if(Nuevo1<0)
+            {
+                Nuevo1 = Modular(Nuevo1,phi);
+            }
 
             MatrizRSA[0, 0] = MatrizRSA[1, 0];
             MatrizRSA[0, 1] = MatrizRSA[1, 1];
@@ -40,8 +50,18 @@ namespace Library_SDES
 
             if (MatrizRSA[1, 0]!=1)
             {
-                LlavePrivadaPublica();
+                LlavePrivadaPublica(p, q);
             }
+        }
+        public int Modular(int num, int phi) 
+        {
+            int mod = 0;
+            if (num<0)
+            {
+                int de=(num*-1) / phi;
+                 mod = num+phi*(de+1);
+            }
+            return mod;
         }
         public List<int> CrearLista(int phi, int p, int q)
         {
