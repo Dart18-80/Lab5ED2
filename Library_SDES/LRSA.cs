@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Library_SDES
@@ -105,6 +106,74 @@ namespace Library_SDES
                 }
             }
             return ListaNumeros;
+        }
+
+        public void CifrarRSA(string ArchivoNuevo, string ArchivoCodificado, int P, int N) 
+        {
+            long Caracteres;
+            byte[] Arreglo = new byte[12000000];
+            byte[] NumP = BitConverter.GetBytes(P);
+            byte[] NumN = BitConverter.GetBytes(N);
+            using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
+            {
+                Caracteres = Text.Length;
+            }
+            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
+            {
+                int contador = 0;
+                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
+                {
+                    double Elevado = Math.Pow(((double)nuevo), P);
+                    double res = Elevado / N;
+                    res = res - ((int)res);
+                    res *= N;
+                    Arreglo[contador] = (byte)((int)Math.Round(res, MidpointRounding.AwayFromZero));
+                    contador++;
+                }
+            }
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
+            {
+                for (int i = 0; i < Caracteres; i++)
+                {
+                    writer.Write(Arreglo[i]);
+                }
+            }
+        }
+
+        public void Descifrar(string ArchivoNuevo, string ArchivoCodificado, int P, int N)
+        {
+            long Caracteres;
+            byte[] Arreglo = new byte[12000000];
+            byte[] NumP = BitConverter.GetBytes(P);
+            byte[] NumN = BitConverter.GetBytes(N);
+            using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
+            {
+                Caracteres = Text.Length;
+            }
+            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
+            {
+                int contador = 0;
+                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
+                {
+                    double Elevado = Math.Pow(((double)nuevo), P);
+                    double res = Elevado / N;
+                    int resMult = (int)res * N;
+
+                    resMult = (int)Elevado - resMult;
+
+                    Arreglo[contador] = (byte)resMult;
+                    contador++;
+                }
+            }
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
+            {
+                for (int i = 0; i < Caracteres; i++)
+                {
+                    writer.Write(Arreglo[i]);
+                }
+            }
         }
     }
 }
