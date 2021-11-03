@@ -123,11 +123,8 @@ namespace Library_SDES
                 int contador = 0;
                 foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                 {
-                    double Elevado = Math.Pow(((double)nuevo), P);
-                    double res = Elevado / N;
-                    res = res - ((int)res);
-                    res *= N;
-                    Arreglo[contador] = (byte)((int)Math.Round(res, MidpointRounding.AwayFromZero));
+
+                    Arreglo[contador] = Convert.ToByte((Math.Pow(nuevo, P))%N) ;
                     contador++;
                 }
             }
