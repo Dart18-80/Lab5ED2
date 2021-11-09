@@ -1,111 +1,108 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 
 namespace Library_SDES
 {
     public class LRSA
     {
-        protected int[,] MatrizRSA = new int[2,2];
-        public void CreacionLlaves(int p, int q) 
+        int[] ListaCoprimos = new int[100000];
+
+        public bool ComprobacionLlavesPrimos(int P , int Q) 
         {
-            Random Rand = new Random();
+            if (ComprobacionLlavesPrimos(P) && ComprobacionLlavesPrimos(Q))
+                return true;
+            else
+                return false;
 
-            int n = p * q;
-            int phiN = (p - 1)*(q - 1);
-            //Se crea una lista sin los coprimos de p y q;
-            List<int> ListaN = CrearLista(phiN, p, q);
-            //la lista se reduce a primos
-            ListaN = ListaPrimos(ListaN);
-            int index = Rand.Next(0, ListaN.Count);
-            int e = ListaN[index];
-
-            MatrizRSA[0, 0] =phiN;
-            MatrizRSA[0, 1] = phiN;
-            MatrizRSA[1, 0] = e;
-            MatrizRSA[1, 1] = 1;
-
-            LlavePrivadaPublica(p, q);
-
-            string a = "";
         }
-
-        public void LlavePrivadaPublica(int p, int q) 
+        public bool ComprobacionLlavesPrimos(int Key)
         {
-            int Nuevo0=MatrizRSA[0, 0] - (MatrizRSA[0, 0] / MatrizRSA[1, 0]) * MatrizRSA[1, 0];
-            int Nuevo1=MatrizRSA[0, 1] - (MatrizRSA[0, 0] / MatrizRSA[1, 0]) * MatrizRSA[1, 1];
-            int phi = (p-1)*(q-1);
-
-            if (Nuevo0<0)
+            int Aux = 0;
+            int Min = 2;
+            if (Key >= 2)
             {
-                Nuevo0 = Modular(Nuevo0, phi);
-            }
-            else if(Nuevo1<0)
-            {
-                Nuevo1 = Modular(Nuevo1,phi);
-            }
-
-            MatrizRSA[0, 0] = MatrizRSA[1, 0];
-            MatrizRSA[0, 1] = MatrizRSA[1, 1];
-            MatrizRSA[1, 0] = Nuevo0;
-            MatrizRSA[1, 1] = Nuevo1;
-
-            if (MatrizRSA[1, 0]!=1)
-            {
-                LlavePrivadaPublica(p, q);
-            }
-        }
-        public List<int> ListaPrimos(List<int> listaV) 
-        {
-            List<int> NuevaLista = new List<int>();
-            int total = 1;
-            int a = 0;
-            for (int i = 0; i < listaV.Count; i++)
-            {
-                for (int j = 1; j < listaV[i]+1; j++)
+                while (Min <= (Key / 2))
                 {
-                    if (listaV[i]%j==0)
-                    {
-                        a++;
-                    }
+                    if (Key % Min == 0) { Aux++; Min++; }
+                    else
+                        Min++;
                 }
-                if (a!=2)
-                {
+                if (Aux == 0)
+                    return true;
+                else
+                    return false;
+            }
+            else
+                return false;
+        }
 
+        public void GenerarLlaves(int p, int q) 
+        {
+            int n = p * q;
+            int PhiN = (p-1)*(q-1);
+            int res = 0, E = 2,Cont = 0 ;
+            while (E < PhiN)
+            {
+                res = MinimoComun(2, PhiN);
+                if (res == 1 && Cont < 100000)
+                {
+                    ListaCoprimos[Cont] = E;
+                    E++;
+                    Cont++;
                 }
                 else
-                {
-                    NuevaLista.Add(listaV[i]);
-                }
-                a = 0;
+                    E++;
             }
-            return NuevaLista;
-        }
-        public int Modular(int num, int phi) 
-        {
-            int mod = 0;
-            if (num<0)
+            Random Num = new Random();
+            int Indice = Num.Next(1,Cont+1);
+            E = ListaCoprimos[Indice];
+
+            int D, K = 1;
+            int Aux = (1 + K * PhiN) % E;
+            while (Aux != 0) 
             {
-                int de=(num*-1) / phi;
-                 mod = num+phi*(de+1);
+                K++;
+                Aux = (1+K*PhiN)%E;
             }
-            return mod;
-        }
-        public List<int> CrearLista(int phi, int p, int q)
-        {
-            List<int> ListaNumeros = new List<int>();
-            for (int i = 0; i < phi; i++)
+            D = (1 + K * PhiN) / E;
+
+            string PrivateKeyPath = @"C:\\Users\\Compresion\\Private.key";
+            string PublicKeyPath = @"C:\\Users\\Compresion\\Public.key";
+            string PathZip = @"C:\\Users\\Compresion.zip";
+
+            System.IO.Directory.CreateDirectory(PrivateKeyPath);
+            System.IO.Directory.CreateDirectory(PublicKeyPath);
+
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(PrivateKeyPath, FileMode.Create)))
             {
-                if (i > 1)
-                {
-                    if (i % p != 0 && i % q != 0)
-                    {
-                        ListaNumeros.Add(i);
-                    }
-                }
+                writer.Write(n);
+                writer.Write(D);
             }
-            return ListaNumeros;
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(PublicKeyPath, FileMode.Create)))
+            {
+                writer.Write(n);
+                writer.Write(E);
+            }
+
+            string startPath = @"C:\\Users\\Compresion";
+            ZipFile.CreateFromDirectory(startPath, PathZip, CompressionLevel.Fastest, true);
+        }
+
+        public int MinimoComun(int E, int PhiN) 
+        {
+            int res = PhiN % E;
+            while (res != 0) 
+            {
+                PhiN = E;
+                E = res;
+                res = PhiN % E;
+            }
+            return E;
         }
 
         public void CifrarRSA(string ArchivoNuevo, string ArchivoCodificado, int P, int N) 
@@ -124,7 +121,7 @@ namespace Library_SDES
                 foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                 {
 
-                    Arreglo[contador] = Convert.ToByte((Math.Pow(nuevo, P))%N) ;
+                    Arreglo[contador] = Convert.ToByte(Modular((int)Math.Pow(nuevo, P), N));
                     contador++;
                 }
             }
@@ -153,13 +150,8 @@ namespace Library_SDES
                 int contador = 0;
                 foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                 {
-                    double Elevado = Math.Pow(((double)nuevo), P);
-                    double res = Elevado / N;
-                    int resMult = (int)res * N;
 
-                    resMult = (int)Elevado - resMult;
-
-                    Arreglo[contador] = (byte)resMult;
+                    Arreglo[contador] = Convert.ToByte(Modular((int)Math.Pow(nuevo, P),N));
                     contador++;
                 }
             }
