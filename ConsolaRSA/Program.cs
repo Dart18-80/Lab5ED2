@@ -22,6 +22,24 @@ namespace ConsolaRSA
 
             Cifradorsa.GenerarLlaves(p,q, Memoria);
 
+            Console.WriteLine("Ingresar direccion del archivo");
+            string Archivo = Console.ReadLine();
+            Console.WriteLine("Ingresar direccion donde lo quiero guardar");
+            string ArchivoSalida = Console.ReadLine();
+            Console.WriteLine("Que llave desea Utilizar?");
+            string Key = Console.ReadLine();
+
+
+            Cifradorsa.CifrarRSA(Archivo, ArchivoSalida, Key);
+
+            Console.WriteLine("Ingresar direccion del archivo a Desifrar");
+            Archivo = Console.ReadLine();
+            Console.WriteLine("Ingresar direccion donde lo quiero guardar");
+            ArchivoSalida = Console.ReadLine();
+            Console.WriteLine("Que llave desea Utilizar?");
+            Key = Console.ReadLine();
+
+            Cifradorsa.CifrarRSA(Archivo, ArchivoSalida, Key);
 
 
 
