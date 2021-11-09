@@ -17,7 +17,12 @@ namespace ConsolaRSA
                 q = Convert.ToInt32(Console.ReadLine());
             } while (Cifradorsa.ComprobacionLlavesPrimos(p,q) != true);
 
-            Cifradorsa.GenerarLlaves(p,q);
+            Console.WriteLine("Ingresar la direccion de Memoria");
+            string Memoria = Console.ReadLine();
+
+            Cifradorsa.GenerarLlaves(p,q, Memoria);
+
+
 
 
         }

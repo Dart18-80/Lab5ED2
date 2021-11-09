@@ -39,14 +39,14 @@ namespace Library_SDES
                 return false;
         }
 
-        public void GenerarLlaves(int p, int q) 
+        public void GenerarLlaves(int p, int q, string CarpetaPath) 
         {
             int n = p * q;
             int PhiN = (p-1)*(q-1);
             int res = 0, E = 2,Cont = 0 ;
             while (E < PhiN)
             {
-                res = MinimoComun(2, PhiN);
+                res = MinimoComun(E, PhiN);
                 if (res == 1 && Cont < 100000)
                 {
                     ListaCoprimos[Cont] = E;
@@ -69,28 +69,31 @@ namespace Library_SDES
             }
             D = (1 + K * PhiN) / E;
 
-            string PrivateKeyPath = @"C:\\Users\\Compresion\\Private.key";
-            string PublicKeyPath = @"C:\\Users\\Compresion\\Public.key";
-            string PathZip = @"C:\\Users\\Compresion.zip";
+            string PrivateKeyPath = "\\Private.key";
+            string PublicKeyPath = "\\Public.key";
 
-            System.IO.Directory.CreateDirectory(PrivateKeyPath);
-            System.IO.Directory.CreateDirectory(PublicKeyPath);
+            string Resultado = CarpetaPath + ".Zip";
 
+            PrivateKeyPath = CarpetaPath + PrivateKeyPath;
+            PublicKeyPath = CarpetaPath + PublicKeyPath;
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(PrivateKeyPath, FileMode.Create)))
             {
-                writer.Write(n);
-                writer.Write(D);
+                writer.Write((byte)n);
+                writer.Write((byte)D);
             }
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(PublicKeyPath, FileMode.Create)))
             {
-                writer.Write(n);
-                writer.Write(E);
+                writer.Write((byte)n);
+                writer.Write((byte)E);
             }
 
-            string startPath = @"C:\\Users\\Compresion";
-            ZipFile.CreateFromDirectory(startPath, PathZip, CompressionLevel.Fastest, true);
+            if (!Directory.Exists(Resultado)) 
+            {
+                File.Delete(Resultado);
+                ZipFile.CreateFromDirectory(CarpetaPath, Resultado, CompressionLevel.Fastest, true);
+            }
         }
 
         public int MinimoComun(int E, int PhiN) 
@@ -105,12 +108,29 @@ namespace Library_SDES
             return E;
         }
 
-        public void CifrarRSA(string ArchivoNuevo, string ArchivoCodificado, int P, int N) 
+        
+        public void CifrarRSA(string ArchivoNuevo, string ArchivoCodificado, string key) 
         {
+
             long Caracteres;
+            byte[] KeyBytes = new byte[2];
+            using (Stream Text = new FileStream(key, FileMode.OpenOrCreate, FileAccess.Read))
+            {
+                Caracteres = Text.Length;
+            }
+            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
+            {
+                int contador = 0;
+                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
+                {
+
+                    KeyBytes[contador] = nuevo;
+                    contador++;
+                }
+            }
+
+            Caracteres = 0;
             byte[] Arreglo = new byte[12000000];
-            byte[] NumP = BitConverter.GetBytes(P);
-            byte[] NumN = BitConverter.GetBytes(N);
             using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
             {
                 Caracteres = Text.Length;
@@ -121,7 +141,7 @@ namespace Library_SDES
                 foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                 {
 
-                    Arreglo[contador] = Convert.ToByte(Modular((int)Math.Pow(nuevo, P), N));
+                    Arreglo[contador] = Convert.ToByte(((int)Math.Pow(nuevo, (int)KeyBytes[1]))%(int)KeyBytes[0]);
                     contador++;
                 }
             }
@@ -135,12 +155,27 @@ namespace Library_SDES
             }
         }
 
-        public void Descifrar(string ArchivoNuevo, string ArchivoCodificado, int P, int N)
+        public void Descifrar(string ArchivoNuevo, string ArchivoCodificado, string key)
         {
             long Caracteres;
+            byte[] KeyBytes = new byte[2];
+            using (Stream Text = new FileStream(key, FileMode.OpenOrCreate, FileAccess.Read))
+            {
+                Caracteres = Text.Length;
+            }
+            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
+            {
+                int contador = 0;
+                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
+                {
+
+                    KeyBytes[contador] = nuevo;
+                    contador++;
+                }
+            }
+
+            Caracteres = 0;
             byte[] Arreglo = new byte[12000000];
-            byte[] NumP = BitConverter.GetBytes(P);
-            byte[] NumN = BitConverter.GetBytes(N);
             using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
             {
                 Caracteres = Text.Length;
@@ -151,7 +186,7 @@ namespace Library_SDES
                 foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                 {
 
-                    Arreglo[contador] = Convert.ToByte(Modular((int)Math.Pow(nuevo, P),N));
+                    Arreglo[contador] = Convert.ToByte(((int)Math.Pow(nuevo, (int)KeyBytes[1])) % (int)KeyBytes[0]);
                     contador++;
                 }
             }
