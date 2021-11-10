@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Library_SDES
 {
-    public class LRSA
+    public class LRSA:InterfazRSA
     {
         int[] ListaCoprimos = new int[100000];
 
@@ -156,7 +156,6 @@ namespace Library_SDES
             BigInteger[] VectorBig = new BigInteger[contador];
             BigInteger Lectura = new BigInteger(NuevoArreglo);
             int i = 0;
-
             while (Lectura > 0)
             {
                 VectorBig[i] = (int)(Lectura % KeyBytes[0]);
@@ -164,7 +163,7 @@ namespace Library_SDES
                 i++;
             }
             indice = 0;
-            while (indice<contador)
+            while (indice<i)
             {
                 Reduccion = 1;
                 BigInteger Numero = VectorBig[indice];
@@ -177,7 +176,7 @@ namespace Library_SDES
                 indice++;
             }
 
-            for (int A = 0; A < contador; A++) 
+            for (int A = i-1; A >=0; A--) 
             {
                 Apoyo = Apoyo * KeyBytes[0];
                 Apoyo = Apoyo + VectorBig[A];
@@ -187,7 +186,7 @@ namespace Library_SDES
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
             {
-                for (int y = 0; y < contador; y++) 
+                for (int y = 0; y < EscribirByte.Length; y++) 
                 {
                     writer.Write(EscribirByte[y]);
                 }
