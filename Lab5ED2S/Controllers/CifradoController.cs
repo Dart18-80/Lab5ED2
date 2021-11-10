@@ -166,7 +166,7 @@ namespace Lab5ED2S.Controllers
             try
             {
                 string uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "Upload");
-                string uploadsFolder2 = Path.Combine(fistenviroment.ContentRootPath, "Upload_Ext");
+                string uploadsFolder2 = Path.Combine(fistenviroment.ContentRootPath, "Upload");
                 string direccionNuevo = Path.Combine(uploadsFolder2, nombre + ".txt");
 
                 string CifrarDesc = Path.Combine(uploadsFolder, File.FileName);

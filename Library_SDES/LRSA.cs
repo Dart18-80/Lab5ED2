@@ -57,8 +57,7 @@ namespace Library_SDES
                 else
                     E++;
             }
-            Random Num = new Random();
-            int Indice = Num.Next(1,Cont+1);
+            int Indice = 1;
             E = ListaCoprimos[Indice-1];
 
             int D, K = 1;
@@ -78,15 +77,17 @@ namespace Library_SDES
             PrivateKeyPath = CarpetaPath + PrivateKeyPath;
             PublicKeyPath = CarpetaPath + PublicKeyPath;
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(PrivateKeyPath, FileMode.Create)))
+            using (StreamWriter writer = new StreamWriter(PrivateKeyPath))
             {
                 writer.Write(n);
+                writer.Write(",");
                 writer.Write(D);
             }
 
-            using (BinaryWriter Escribir = new BinaryWriter(File.Open(PublicKeyPath, FileMode.Create)))
+            using (StreamWriter Escribir = new StreamWriter(PublicKeyPath))
             {
                 Escribir.Write(n);
+                Escribir.Write(",");
                 Escribir.Write(E);
             }
 
@@ -114,23 +115,16 @@ namespace Library_SDES
         {
 
             long Caracteres;
-            byte[] KeyBytes = new byte[2];
-            int[] Texto = new int[12000000];
+            int[] KeyBytes = new int[2];
             int contador = 0, Reduccion = 1;
-            using (Stream Text = new FileStream(key, FileMode.OpenOrCreate, FileAccess.Read))
-            {
-                Caracteres = Text.Length;
-            }
-            using (BinaryReader reader = new BinaryReader(File.Open(key, FileMode.Open)))
-            {
-                contador = 0;
-                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
-                {
+            string ArchivoKeys = "";
+            string[] Lineas = File.ReadAllLines(key);
 
-                    KeyBytes[contador] = nuevo;
-                    contador++;
-                }
-            }
+            string[] Llaves = Lineas[0].Split(",");
+            
+            KeyBytes[0] = Convert.ToInt32(Llaves[0]);
+            KeyBytes[1] = Convert.ToInt32(Llaves[1]);
+
 
             Caracteres = 0;
             byte[] Arreglo = new byte[12000000];
@@ -147,30 +141,46 @@ namespace Library_SDES
                     contador++;
                 }
             }
-            int indice = 0;
-            BigInteger Lectura = new BigInteger(Arreglo);
-            for (int i = 0; i<= contador-1;i++) 
+            byte[] NuevoArreglo = new byte[contador];
+
+            for (int j = 0; j < contador; j++)
             {
-                while (Lectura > 0) 
-                {
-                    Texto[indice] = (int)((int)Lectura % (int)KeyBytes[0]);
-                    Lectura = Lectura / KeyBytes[0];
-                }
+                NuevoArreglo[j] = Arreglo[j];
+            }
+            int indice = 0;
+            BigInteger[] VectorBig = new BigInteger[contador];
+            BigInteger Lectura = new BigInteger(Arreglo);
+            int i = 0;
+
+            while (Lectura > 0)
+            {
+                VectorBig[i] = (int)(Lectura % KeyBytes[0]);
+                Lectura = Lectura / KeyBytes[0];
+                i++;
+            }
+            indice = 0;
+            while (indice<contador)
+            {
                 Reduccion = 1;
+
                 for (int y = 0; y < KeyBytes[1]; y++)
                 {
-                    Reduccion = Reduccion * Texto[i];
+                    Reduccion = (int)(Reduccion * VectorBig[i]);
                     Reduccion = Reduccion % KeyBytes[0];
                 }
-                Texto[indice] = Reduccion;
+                VectorBig[i] = Reduccion;
                 indice++;
             }
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
             {
-                for (int i = 0; i < Caracteres; i++)
+                for (int j = 0; j < Caracteres; j++)
                 {
-                    writer.Write((byte)Texto[i]);
+                    byte[] Nuevo = VectorBig[j].ToByteArray();
+                    for (int k = 0; k < Nuevo.Length; k++)
+                    {
+                        writer.Write(Nuevo[k]) ;
+                    }
                 }
             }
         }
