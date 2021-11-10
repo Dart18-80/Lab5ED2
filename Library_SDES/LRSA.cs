@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Numerics;
 using System.Text;
 
 namespace Library_SDES
@@ -58,7 +59,7 @@ namespace Library_SDES
             }
             Random Num = new Random();
             int Indice = Num.Next(1,Cont+1);
-            E = ListaCoprimos[Indice];
+            E = ListaCoprimos[Indice-1];
 
             int D, K = 1;
             int Aux = (1 + K * PhiN) % E;
@@ -79,14 +80,14 @@ namespace Library_SDES
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(PrivateKeyPath, FileMode.Create)))
             {
-                writer.Write((byte)n);
-                writer.Write((byte)D);
+                writer.Write(n);
+                writer.Write(D);
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(PublicKeyPath, FileMode.Create)))
+            using (BinaryWriter Escribir = new BinaryWriter(File.Open(PublicKeyPath, FileMode.Create)))
             {
-                writer.Write((byte)n);
-                writer.Write((byte)E);
+                Escribir.Write(n);
+                Escribir.Write(E);
             }
 
             if (!Directory.Exists(Resultado)) 
@@ -114,13 +115,15 @@ namespace Library_SDES
 
             long Caracteres;
             byte[] KeyBytes = new byte[2];
+            int[] Texto = new int[12000000];
+            int contador = 0, Reduccion = 1;
             using (Stream Text = new FileStream(key, FileMode.OpenOrCreate, FileAccess.Read))
             {
                 Caracteres = Text.Length;
             }
             using (BinaryReader reader = new BinaryReader(File.Open(key, FileMode.Open)))
             {
-                int contador = 0;
+                contador = 0;
                 foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                 {
 
@@ -137,25 +140,37 @@ namespace Library_SDES
             }
             using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
             {
-                int contador = 0;
+                contador = 0;
                 foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                 {
-                    Int64 Elevado = (long)Math.Pow(nuevo,(int)KeyBytes[1]);
-                    double Conversion = Elevado / (int)KeyBytes[0];
-                    Int64 Entero = (int)(Elevado / (int)KeyBytes[0]);
-                    double BitEscribir = Conversion - Entero;
-                    double Mul = BitEscribir * (int)KeyBytes[0];
-                    int NumeroEscribir = (int)Math.Round(Mul);
-                    Arreglo[contador] = (byte)NumeroEscribir; 
+                    Arreglo[contador] = (byte)nuevo; 
                     contador++;
                 }
+            }
+            int indice = 0;
+            BigInteger Lectura = new BigInteger(Arreglo);
+            for (int i = 0; i<= contador-1;i++) 
+            {
+                while (Lectura > 0) 
+                {
+                    Texto[indice] = (int)((int)Lectura % (int)KeyBytes[0]);
+                    Lectura = Lectura / KeyBytes[0];
+                }
+                Reduccion = 1;
+                for (int y = 0; y < KeyBytes[1]; y++)
+                {
+                    Reduccion = Reduccion * Texto[i];
+                    Reduccion = Reduccion % KeyBytes[0];
+                }
+                Texto[indice] = Reduccion;
+                indice++;
             }
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
             {
                 for (int i = 0; i < Caracteres; i++)
                 {
-                    writer.Write(Arreglo[i]);
+                    writer.Write((byte)Texto[i]);
                 }
             }
         }
