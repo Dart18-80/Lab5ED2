@@ -180,7 +180,7 @@ namespace Library_SDES
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
             {
-                for (int j = 0; j < Caracteres; j++)
+                for (int j = 0; j < contador; j++)
                 {
                     byte[] Nuevo = VectorBig[j].ToByteArray();
                     for (int k = 0; k < Nuevo.Length; k++)
