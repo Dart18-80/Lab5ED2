@@ -161,9 +161,46 @@ namespace Lab5ED2S.Controllers
         }
         [Route("api/rsa/{nombre}")]
         [HttpPost]
-        public IActionResult CifrarDecifrarRSA([FromForm] IFormFile CifrarDescifrar, [FromForm] IFormFile llaveA, string nombre)
+        public IActionResult CifrarDecifrarRSA([FromForm] IFormFile File, [FromForm] IFormFile Key, string nombre)
         {
-            return Ok();
+            string uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadDecifrado");
+            string direccionNuevo = Path.Combine(uploadsFolder, nombre + ".txt");
+            System.IO.File.WriteAllLines(direccionNuevo, new string[0]);
+            String CifrarDesc = Path.Combine(uploadsFolder, File.FileName);
+            String LlaveDesc = Path.Combine(uploadsFolder, Key.FileName);
+
+
+            if (System.IO.File.Exists(CifrarDesc))
+            {
+                System.IO.File.Delete(CifrarDesc);
+            }
+            if (System.IO.File.Exists(LlaveDesc))
+            {
+                System.IO.File.Delete(LlaveDesc);
+            }
+
+            if (!System.IO.File.Exists(CifrarDesc))
+            {
+                using (var INeadLearn = new FileStream(CifrarDesc, FileMode.CreateNew))
+                {
+                    File.CopyTo(INeadLearn);
+                }
+            }
+            if (!System.IO.File.Exists(LlaveDesc))
+            {
+                using (var INeadLearn = new FileStream(LlaveDesc, FileMode.CreateNew))
+                {
+                    Key.CopyTo(INeadLearn);
+                }
+            }
+            CifradoRSA.CifrarRSA(CifrarDesc, direccionNuevo, LlaveDesc);
+
+            var files = System.IO.File.OpenRead(direccionNuevo);
+            string mimeType = "application/txt";
+            return new FileStreamResult(files, mimeType)
+            {
+                FileDownloadName = nombre+".txt"
+            };
         }
     }
 }
