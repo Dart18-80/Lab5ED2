@@ -124,7 +124,7 @@ namespace Library_SDES
             int contador = 0, Reduccion = 1;
             string ArchivoKeys = "";
             string[] Lineas = File.ReadAllLines(key);
-
+            BigInteger Apoyo = 0;
             string[] Llaves = Lineas[0].Split(",");
             
             KeyBytes[0] = Convert.ToInt32(Llaves[0]);
@@ -154,7 +154,6 @@ namespace Library_SDES
             }
             int indice = 0;
             BigInteger[] VectorBig = new BigInteger[contador];
-            BigInteger[] Apoyo = new BigInteger[contador];
             BigInteger Lectura = new BigInteger(NuevoArreglo);
             int i = 0;
 
@@ -178,15 +177,19 @@ namespace Library_SDES
                 indice++;
             }
 
+            for (int A = 0; A < contador; A++) 
+            {
+                Apoyo = Apoyo * KeyBytes[0];
+                Apoyo = Apoyo + VectorBig[A];
+            }
+
+            byte[] EscribirByte = Apoyo.ToByteArray();
+
             using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
             {
-                for (int j = 0; j < contador; j++)
+                for (int y = 0; y < contador; y++) 
                 {
-                    byte[] Nuevo = VectorBig[j].ToByteArray();
-                    for (int k = 0; k < Nuevo.Length; k++)
-                    {
-                        writer.Write(Nuevo[k]) ;
-                    }
+                    writer.Write(EscribirByte[y]);
                 }
             }
         }
