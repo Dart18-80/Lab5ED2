@@ -57,17 +57,22 @@ namespace Library_SDES
                 else
                     E++;
             }
-            int Indice = 1;
+            int Indice = 1, D=0;
             E = ListaCoprimos[Indice-1];
-
-            int D, K = 1;
-            int Aux = (1 + K * PhiN) % E;
-            while (Aux != 0) 
+            bool Entrar = true;
+            for (int i = 0; i < PhiN; i++) 
             {
-                K++;
-                Aux = (1+K*PhiN)%E;
+                int Res = (int)(Indice % E);
+                if (Res == 0) 
+                {
+                    if (Entrar) 
+                    {
+                        D = Indice / E;
+                        Entrar = false;
+                    }
+                }
+                Indice = Indice + PhiN;
             }
-            D = (1 + K * PhiN) / E;
 
             string PrivateKeyPath = "\\Private.key";
             string PublicKeyPath = "\\Public.key";
