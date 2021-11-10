@@ -137,7 +137,7 @@ namespace Lab5ED2S.Controllers
             bool VerificarLlaves=CifradoRSA.ComprobacionLlavesPrimos(p, q);
             if (VerificarLlaves)
             {
-                string uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadCifrado");
+                string uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "Upload");
                 string path = Path.Combine(uploadsFolder, "Llaves");
                 if (!Directory.Exists(path))
                 {
@@ -163,44 +163,60 @@ namespace Lab5ED2S.Controllers
         [HttpPost]
         public IActionResult CifrarDecifrarRSA([FromForm] IFormFile File, [FromForm] IFormFile Key, string nombre)
         {
-            string uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadDecifrado");
-            string direccionNuevo = Path.Combine(uploadsFolder, nombre + ".txt");
-            System.IO.File.WriteAllLines(direccionNuevo, new string[0]);
-            String CifrarDesc = Path.Combine(uploadsFolder, File.FileName);
-            String LlaveDesc = Path.Combine(uploadsFolder, Key.FileName);
-
-
-            if (System.IO.File.Exists(CifrarDesc))
+            try
             {
-                System.IO.File.Delete(CifrarDesc);
-            }
-            if (System.IO.File.Exists(LlaveDesc))
-            {
-                System.IO.File.Delete(LlaveDesc);
-            }
+                string uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "Upload");
+                string uploadsFolder2 = Path.Combine(fistenviroment.ContentRootPath, "Upload_Ext");
+                string direccionNuevo = Path.Combine(uploadsFolder2, nombre + ".txt");
 
-            if (!System.IO.File.Exists(CifrarDesc))
-            {
-                using (var INeadLearn = new FileStream(CifrarDesc, FileMode.CreateNew))
+                string CifrarDesc = Path.Combine(uploadsFolder, File.FileName);
+                string LlaveDesc = Path.Combine(uploadsFolder, Key.FileName);
+
+                if (System.IO.File.Exists(direccionNuevo))
                 {
-                    File.CopyTo(INeadLearn);
+                    System.IO.File.Delete(direccionNuevo);
                 }
-            }
-            if (!System.IO.File.Exists(LlaveDesc))
-            {
-                using (var INeadLearn = new FileStream(LlaveDesc, FileMode.CreateNew))
+                if (System.IO.File.Exists(CifrarDesc))
                 {
-                    Key.CopyTo(INeadLearn);
+                    System.IO.File.Delete(CifrarDesc);
                 }
-            }
-            CifradoRSA.CifrarRSA(CifrarDesc, direccionNuevo, LlaveDesc);
+                if (System.IO.File.Exists(LlaveDesc))
+                {
+                    System.IO.File.Delete(LlaveDesc);
+                }
 
-            var files = System.IO.File.OpenRead(direccionNuevo);
-            string mimeType = "application/txt";
-            return new FileStreamResult(files, mimeType)
+                System.IO.File.WriteAllLines(direccionNuevo, new string[0]);
+
+                if (!System.IO.File.Exists(CifrarDesc))
+                {
+                    using (var INeadLearn = new FileStream(CifrarDesc, FileMode.CreateNew))
+                    {
+                        File.CopyTo(INeadLearn);
+                    }
+                }
+                if (!System.IO.File.Exists(LlaveDesc))
+                {
+                    using (var INeadLearn = new FileStream(LlaveDesc, FileMode.CreateNew))
+                    {
+                        Key.CopyTo(INeadLearn);
+                    }
+                }
+                CifradoRSA.CifrarRSA(CifrarDesc, direccionNuevo, LlaveDesc);
+
+                var files = System.IO.File.OpenRead(direccionNuevo);
+                string mimeType = "application/txt";
+               
+                return new FileStreamResult(files, mimeType)
+                {
+                    FileDownloadName = nombre + ".txt"
+                };
+
+            }
+            catch (Exception)
             {
-                FileDownloadName = nombre+".txt"
-            };
+                return StatusCode(500);
+                throw;
+            }
         }
     }
 }
