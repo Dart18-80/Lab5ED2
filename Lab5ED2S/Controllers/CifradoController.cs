@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Library_SDES;
 using System.IO;
+using System.Net;
 
 namespace Lab5ED2S.Controllers
 {
@@ -20,6 +21,7 @@ namespace Lab5ED2S.Controllers
             this.fistenviroment = enviroment;
         }
         SDES CifradoSDES = new SDES();
+        LRSA CifradoRSA = new LRSA();
         public static string nombreoriginal = "";
 
         [Route("api/sdes/cipher/{nombre}")]
@@ -127,5 +129,38 @@ namespace Lab5ED2S.Controllers
             }
             return filepath;
         }
-     }
+
+        [Route("api/rsa/keys/{p}/{q}")]
+        [HttpGet]
+        public IActionResult Llaves(int p, int q)
+        {
+            bool VerificarLlaves=CifradoRSA.ComprobacionLlavesPrimos(p, q);
+            if (VerificarLlaves)
+            {
+                string uploadsFolder = Path.Combine(fistenviroment.ContentRootPath, "UploadCifrado");
+                string path = Path.Combine(uploadsFolder, "Llaves");
+                if (!Directory.Exists(path))
+                {
+                    DirectoryInfo di = Directory.CreateDirectory(path);
+                }
+
+                CifradoRSA.GenerarLlaves(p, q, path);
+
+                var files = System.IO.File.OpenRead(path+".zip");
+                string mimeType = "application/zip";
+                return new FileStreamResult(files, mimeType)
+                {
+                    FileDownloadName = "LlavesNuevas.zip"
+                };
+            }
+            else
+            {
+                return Ok("El ingreso de los numeros p y q no son primos");
+
+            }
+        }
+
+    }
+
+    
 }
