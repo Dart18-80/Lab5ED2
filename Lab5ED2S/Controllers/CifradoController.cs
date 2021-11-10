@@ -155,7 +155,7 @@ namespace Lab5ED2S.Controllers
             }
             else
             {
-                return Ok("El ingreso de los numeros p y q no son primos");
+                return StatusCode(500,"El ingreso de los numeros p y q no son primos");
 
             }
         }
