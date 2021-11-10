@@ -156,12 +156,24 @@ namespace Library_SDES
             BigInteger[] VectorBig = new BigInteger[contador];
             BigInteger Lectura = new BigInteger(NuevoArreglo);
             int i = 0;
-            while (Lectura > 0)
+
+            if (Lectura.CompareTo(0) < 0)
             {
-                VectorBig[i] = (int)(Lectura % KeyBytes[0]);
-                Lectura = Lectura / KeyBytes[0];
-                i++;
+                Lectura = Lectura * -1;
             }
+            else
+            {
+                for (int j = 0; j < contador; j++)
+                {
+                    if (Lectura > 0)
+                    {
+                        VectorBig[j] = (int)(ModularBig(Lectura, KeyBytes[0]));
+                        Lectura = Lectura / KeyBytes[0];
+                        i++;
+                    }
+                }
+            }
+
             indice = 0;
             while (indice<i)
             {
@@ -170,7 +182,7 @@ namespace Library_SDES
                 for (int y = 0; y < KeyBytes[1]; y++)
                 {
                     Reduccion = (int)(Reduccion * Numero);
-                    Reduccion = Reduccion % KeyBytes[0];
+                    Reduccion = ModularInt(Reduccion, KeyBytes[0]);
                 }
                 VectorBig[indice] = Reduccion;
                 indice++;
@@ -192,50 +204,19 @@ namespace Library_SDES
                 }
             }
         }
-
-        public void Descifrar(string ArchivoNuevo, string ArchivoCodificado, string key)
+        public BigInteger ModularBig(BigInteger Big, int num)
         {
-            long Caracteres;
-            byte[] KeyBytes = new byte[2];
-            using (Stream Text = new FileStream(key, FileMode.OpenOrCreate, FileAccess.Read))
-            {
-                Caracteres = Text.Length;
-            }
-            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
-            {
-                int contador = 0;
-                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
-                {
-
-                    KeyBytes[contador] = nuevo;
-                    contador++;
-                }
-            }
-
-            Caracteres = 0;
-            byte[] Arreglo = new byte[12000000];
-            using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
-            {
-                Caracteres = Text.Length;
-            }
-            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
-            {
-                int contador = 0;
-                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
-                {
-
-                    Arreglo[contador] = Convert.ToByte(((int)Math.Pow(nuevo, (int)KeyBytes[1])) % (int)KeyBytes[0]);
-                    contador++;
-                }
-            }
-
-            using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
-            {
-                for (int i = 0; i < Caracteres; i++)
-                {
-                    writer.Write(Arreglo[i]);
-                }
-            }
+            BigInteger Primer = Big / num;
+            BigInteger Secundo = Big - (Primer * num);
+            return Secundo;
         }
+
+        public int ModularInt(int Big, int num)
+        {
+            int Primer = Big / num;
+            int Secundo = Big - (Primer * num);
+            return Secundo;
+        }
+
     }
 }
