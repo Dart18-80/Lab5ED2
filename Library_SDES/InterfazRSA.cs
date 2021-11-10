@@ -4,9 +4,8 @@ using System.Text;
 
 namespace Library_SDES
 {
-    public interface InterfazRSA<T>
+    public interface InterfazRSA
     {
         
-
     }
 }
