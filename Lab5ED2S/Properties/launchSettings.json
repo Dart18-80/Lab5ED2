@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/sdes/cipher",
+      "launchUrl": "api/rsa/keys",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

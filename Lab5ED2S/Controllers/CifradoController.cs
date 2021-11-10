@@ -159,8 +159,11 @@ namespace Lab5ED2S.Controllers
 
             }
         }
-
+        [Route("api/rsa/{nombre}")]
+        [HttpPost]
+        public IActionResult CifrarDecifrarRSA([FromForm] IFormFile CifrarDescifrar, [FromForm] IFormFile llaveA, string nombre)
+        {
+            return Ok();
+        }
     }
-
-    
 }
