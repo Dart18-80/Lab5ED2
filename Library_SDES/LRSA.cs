@@ -154,7 +154,8 @@ namespace Library_SDES
             }
             int indice = 0;
             BigInteger[] VectorBig = new BigInteger[contador];
-            BigInteger Lectura = new BigInteger(Arreglo);
+            BigInteger[] Apoyo = new BigInteger[contador];
+            BigInteger Lectura = new BigInteger(NuevoArreglo);
             int i = 0;
 
             while (Lectura > 0)
@@ -167,19 +168,19 @@ namespace Library_SDES
             while (indice<contador)
             {
                 Reduccion = 1;
-
+                BigInteger Numero = VectorBig[indice];
                 for (int y = 0; y < KeyBytes[1]; y++)
                 {
-                    Reduccion = (int)(Reduccion * VectorBig[i]);
+                    Reduccion = (int)(Reduccion * Numero);
                     Reduccion = Reduccion % KeyBytes[0];
                 }
-                VectorBig[i] = Reduccion;
+                VectorBig[indice] = Reduccion;
                 indice++;
             }
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
             {
-                for (int j = 0; j < Caracteres; j++)
+                for (int j = 0; j < contador; j++)
                 {
                     byte[] Nuevo = VectorBig[j].ToByteArray();
                     for (int k = 0; k < Nuevo.Length; k++)
