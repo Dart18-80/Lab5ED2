@@ -118,7 +118,7 @@ namespace Library_SDES
             {
                 Caracteres = Text.Length;
             }
-            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(key, FileMode.Open)))
             {
                 int contador = 0;
                 foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
@@ -140,8 +140,13 @@ namespace Library_SDES
                 int contador = 0;
                 foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
                 {
-
-                    Arreglo[contador] = Convert.ToByte(((int)Math.Pow(nuevo, (int)KeyBytes[1]))%(int)KeyBytes[0]);
+                    Int64 Elevado = (long)Math.Pow(nuevo,(int)KeyBytes[1]);
+                    double Conversion = Elevado / (int)KeyBytes[0];
+                    Int64 Entero = (int)(Elevado / (int)KeyBytes[0]);
+                    double BitEscribir = Conversion - Entero;
+                    double Mul = BitEscribir * (int)KeyBytes[0];
+                    int NumeroEscribir = (int)Math.Round(Mul);
+                    Arreglo[contador] = (byte)NumeroEscribir; 
                     contador++;
                 }
             }
