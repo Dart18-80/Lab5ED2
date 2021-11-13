@@ -7,7 +7,25 @@ using System.Text;
 
 namespace Library_SDES
 {
-    public class LRSA:InterfazRSA
+    public static class Extensions 
+    {
+        public static T[] Slice<T>(this T[] source, int start, int end)
+        {
+            if (end < 0)
+            {
+                end = source.Length + end;
+            }
+            int len = end - start;
+
+            T[] res = new T[len];
+            for (int i = 0; i < len; i++)
+            {
+                res[i] = source[i + start];
+            }
+            return res;
+        }
+    }
+    public class LRSA : InterfazRSA
     {
         int[] ListaCoprimos = new int[100000];
 
@@ -115,16 +133,13 @@ namespace Library_SDES
             return E;
         }
 
-        
         public void CifrarRSA(string ArchivoNuevo, string ArchivoCodificado, string key) 
         {
 
             long Caracteres;
             int[] KeyBytes = new int[2];
-            int contador = 0, Reduccion = 1;
-            string ArchivoKeys = "";
+            long contador = 0;
             string[] Lineas = File.ReadAllLines(key);
-            BigInteger Apoyo = 0;
             string[] Llaves = Lineas[0].Split(",");
             
             KeyBytes[0] = Convert.ToInt32(Llaves[0]);
@@ -132,77 +147,122 @@ namespace Library_SDES
 
 
             Caracteres = 0;
-            byte[] Arreglo = new byte[12000000];
-            using (Stream Text = new FileStream(ArchivoNuevo, FileMode.OpenOrCreate, FileAccess.Read))
+            byte[] Arreglo =null;
+
+            using (FileStream fs = File.OpenRead(ArchivoNuevo))
             {
-                Caracteres = Text.Length;
-            }
-            using (BinaryReader reader = new BinaryReader(File.Open(ArchivoNuevo, FileMode.Open)))
-            {
-                contador = 0;
-                foreach (byte nuevo in reader.ReadBytes((int)Caracteres))
+                contador = fs.Length;
+                using (BinaryReader binaryReader = new BinaryReader(fs))
                 {
-                    Arreglo[contador] = (byte)nuevo; 
-                    contador++;
+                    Arreglo = binaryReader.ReadBytes((int)fs.Length);
                 }
             }
-            byte[] NuevoArreglo = new byte[contador];
-
-            for (int j = 0; j < contador; j++)
+            List<byte[]> ArregloByte = new List<byte[]>();
+            bool Verificar = true;
+            byte[] Nuevo = null;
+            int x = 0, acarreo = 8000, total = 0;
+            while (Verificar) 
             {
-                NuevoArreglo[j] = Arreglo[j];
+                int operacion = (int)contador - acarreo;
+                if (operacion > 0)
+                {
+                    byte[] Ver = Arreglo.Slice(x, acarreo);
+                    ArregloByte.Add(CifradoBloques(Ver, acarreo,KeyBytes));
+                    x = acarreo ;
+                    acarreo += 8000;
+                }
+                else 
+                {
+                    byte[] Ver = Arreglo.Slice(x, (int)contador);
+                    ArregloByte.Add(CifradoBloques(Ver, (int)contador, KeyBytes));
+                    Verificar = false;
+                }
             }
-            int indice = 0;
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
+            {
+                foreach (var Escri in ArregloByte) 
+                {
+                    for (int y = 0; y < Escri.Length; y++)
+                    {
+                        writer.Write(Escri[y]);
+                    }
+                }
+            }
+        }
+
+        public byte[] CifradoBloques(byte[] Arreglo, int contador,int[] KeyBytes) 
+        {
+            int indice = 0, Reduccion = 1;
+            BigInteger Apoyo = 0;
             BigInteger[] VectorBig = new BigInteger[contador];
-            BigInteger Lectura = new BigInteger(NuevoArreglo);
+            BigInteger Lectura = new BigInteger(Arreglo);
             int i = 0;
+            bool verificarsigno = false;
 
             if (Lectura.CompareTo(0) < 0)
             {
-                Lectura = Lectura * -1;
+
+                while (Lectura < 0)
+                {
+                    VectorBig[i] = Lectura % KeyBytes[0];
+                    Lectura = Lectura / KeyBytes[0];
+                    i++;
+                }
+                verificarsigno = true;
             }
             else
             {
-                for (int j = 0; j < contador; j++)
+                while (Lectura > 0)
                 {
-                    if (Lectura > 0)
-                    {
-                        VectorBig[j] = (int)(ModularBig(Lectura, KeyBytes[0]));
-                        Lectura = Lectura / KeyBytes[0];
-                        i++;
-                    }
+                    VectorBig[i] = (ModularBig(Lectura, KeyBytes[0]));
+                    Lectura = Lectura / KeyBytes[0];
+                    i++;
                 }
             }
 
             indice = 0;
-            while (indice<i)
+
+            if (verificarsigno)
             {
-                Reduccion = 1;
-                BigInteger Numero = VectorBig[indice];
-                for (int y = 0; y < KeyBytes[1]; y++)
+                while (i>indice)
                 {
-                    Reduccion = (int)(Reduccion * Numero);
-                    Reduccion = ModularInt(Reduccion, KeyBytes[0]);
+                    Reduccion = 1;
+                    BigInteger Numero = VectorBig[indice];
+                    for (int y = 0; y < KeyBytes[1]; y++)
+                    {
+                        Reduccion = (int)(Reduccion * Numero);
+                        Reduccion = Reduccion % KeyBytes[0];
+                    }
+                    VectorBig[indice] = Reduccion;
+                    indice++;
                 }
-                VectorBig[indice] = Reduccion;
-                indice++;
+            }
+            else
+            {
+                while (i>indice)
+                {
+                    Reduccion = 1;
+                    BigInteger Numero = VectorBig[indice];
+                    for (int y = 0; y < KeyBytes[1]; y++)
+                    {
+                        Reduccion = (int)(Reduccion * Numero);
+                        Reduccion = ModularInt(Reduccion, KeyBytes[0]);
+                    }
+                    VectorBig[indice] = Reduccion;
+                    indice++;
+                }
             }
 
-            for (int A = i-1; A >=0; A--) 
+
+            for (int A = VectorBig.Length-1; A >= 0; A--)
             {
                 Apoyo = Apoyo * KeyBytes[0];
                 Apoyo = Apoyo + VectorBig[A];
             }
 
             byte[] EscribirByte = Apoyo.ToByteArray();
-
-            using (BinaryWriter writer = new BinaryWriter(File.Open(ArchivoCodificado, FileMode.Create)))
-            {
-                for (int y = 0; y < EscribirByte.Length; y++) 
-                {
-                    writer.Write(EscribirByte[y]);
-                }
-            }
+            return EscribirByte;
         }
         public BigInteger ModularBig(BigInteger Big, int num)
         {
@@ -211,12 +271,14 @@ namespace Library_SDES
             return Secundo;
         }
 
+    
         public int ModularInt(int Big, int num)
         {
             int Primer = Big / num;
             int Secundo = Big - (Primer * num);
             return Secundo;
         }
+
 
     }
 }
